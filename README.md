@@ -5,42 +5,45 @@ Academia** — pure PowerShell, zero dependencies. No Node.js, no npm, no jq, no
 admin rights. Works on any locked-down Windows machine where PowerShell is the
 only thing you're guaranteed to have.
 
-Three lines, so nothing gets cut off by terminal width:
+One line, kept minimal:
 
-<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: line 1 reads &#39;fist Sonnet 5, school my-project, bolt main&#39;; line 2 reads &#39;graduation cap U.A. Year 2 Student Lv7, XP bar 84 of 140&#39;; line 3 reads &#39;battery Stamina 85% PLUS ULTRA, stopwatch 5h 18% 7d 63%, coin $1.23, +87 -12&#39;" width="640"></p>
+<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 PLUS ULTRA, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%" width="640"></p>
 
 ## What it shows
 
 | Segment | Meaning | Source |
 |---|---|---|
-| 💥 Quirk | Model name (icon varies by [theme](#themes) — ✊ for Deku, shown above) | `model.display_name` |
-| 🎓 Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
-| 🏫 Agency | Current folder name + git branch (⚡ red) | `workspace.current_dir` / `git branch --show-current` |
-| 🔋 Stamina | Context window remaining % — green ≥50%, gold 20-50%, red <20%. Shows **PLUS ULTRA!** at ≥80% | `context_window.remaining_percentage` |
+| 💥 Quirk | Model name + the character's catchphrase (icon/phrase vary by [theme](#themes) — ✊ PLUS ULTRA! for Deku, shown above) | `model.display_name` |
+| Agency | Current folder name | `workspace.current_dir` |
+| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
 | ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
-| 🪙 Cost | Session cost in USD | `cost.total_cost_usd` |
-| +/- | Lines added / removed this session | `cost.total_lines_added` / `.total_lines_removed` |
+
+The git branch was dropped from the line entirely (not just hidden) to keep
+things minimal — see [Customizing](#customizing) if you want it back.
 
 Every field is optional — if Claude Code's statusline payload doesn't include it
 (older CLI version, different plan), that segment is just skipped. The script
-never throws: worst case it prints just the model name.
+never throws: worst case it prints just the model name. Context-remaining %,
+session cost, and lines-added/removed are intentionally left off the line to
+keep it minimal — they're still in `settings.json`'s statusline payload if you
+want to add a field back in [Customizing](#customizing).
 
 ## Rank: hero career progression
 
 A small companion feature inspired by [Claudemon](https://github.com/zamarrowski/claudemon):
 your own hero career levels up as you use Claude Code, shown as
-`🎓 <career stage> Lv<N>  <XP bar>  xp/next`. Unlike Claudemon there's no
+`<stage> · Lv<N>  <XP bar>  xp/next`. Unlike Claudemon there's no
 catching/battling — it's just you, climbing the ranks:
 
-| Level | Career stage |
+| Level | Shown as |
 |---|---|
-| 1-4 | U.A. Year 1 Student |
-| 5-9 | U.A. Year 2 Student |
-| 10-14 | U.A. Year 3 Student |
-| 15-19 | Provisional License Holder |
-| 20-29 | Hero Assistant (Sidekick) |
-| 30-39 | Agency Founder |
-| 40+ | JP Hero Billboard Chart — a numeric rank (`#300` down to `#1`) that counts down as you level, reaching **#1 — Symbol of Peace** around level 99 |
+| 1-4 | `Y1` |
+| 5-9 | `Y2` |
+| 10-14 | `Y3` |
+| 15-19 | `License` |
+| 20-29 | `Sidekick` |
+| 30-39 | `Agency Founder` |
+| 40+ | `#300`…`#1` — the JP Hero Billboard Chart, a numeric rank that counts down as you level, reaching **#1** (Symbol of Peace) around level 99 |
 
 XP is granted by a `Stop` hook (`gain-xp.ps1`) that fires once per finished
 Claude Code turn and adds a small random amount to
@@ -52,18 +55,17 @@ it's one shared hero career, not per-project.
 
 ## Themes
 
-Five character themes, each with its own Quirk icon, color palette, and
-high-stamina catchphrase:
+Five character themes, each with its own Quirk icon, color palette, and catchphrase:
 
 <p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme: fist green Deku, planet pink Uraraka, explosion orange Bakugo, snowflake blue Todoroki, flexed-bicep blue All Might" width="420"></p>
 
-| Theme key | Character | Colors |
-|---|---|---|
-| `deku` *(default)* | Deku (Izuku Midoriya) | One For All green, hero-red accents |
-| `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown |
-| `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents |
-| `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red |
-| `allmight` | All Might | Hero-suit blue and gold |
+| Theme key | Character | Colors | Catchphrase |
+|---|---|---|---|
+| `deku` *(default)* | Deku (Izuku Midoriya) | One For All green, hero-red accents | PLUS ULTRA! |
+| `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown | ZERO GRAVITY! |
+| `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents | I AM NUMBER ONE! |
+| `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | FLASHFIRE FIST! |
+| `allmight` | All Might | Hero-suit blue and gold | I AM HERE! |
 
 `install.ps1` asks you to pick one on first install. To switch later, the
 easiest way is right from the Claude Code chat:
