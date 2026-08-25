@@ -16,6 +16,11 @@ $lockFile  = Join-Path $claudeDir 'mha-statusline-state.lock'
 # curve to size the displayed XP bar against the level this script already leveled up to.
 function Get-XpToNext([int]$level) { 50 + ($level - 1) * 15 }
 
+# Support Course cosmetic unlocks -- crossing one of these levels reskins the
+# XP bar's glyph pair (statusline.ps1 applies whichever unlocked tier is
+# highest). Must match $UnlockGlyphs' keys in statusline.ps1.
+$UnlockLevels = @(5, 10, 15, 20, 30, 40)
+
 $acquired = $false
 for ($i = 0; $i -lt 50; $i++) {
     try {
@@ -46,6 +51,24 @@ try {
     while ([int]$state.xp -ge (Get-XpToNext ([int]$state.level))) {
         $state.xp = [int]$state.xp - (Get-XpToNext ([int]$state.level))
         $state.level = [int]$state.level + 1
+    }
+
+    # Record any newly-crossed unlock thresholds. Additive/backward-compatible
+    # with state files written before this feature existed (no `unlocks`
+    # property yet) -- those just start from an empty list.
+    $existingUnlocks = @()
+    if ($state.PSObject.Properties.Name -contains 'unlocks' -and $state.unlocks) {
+        $existingUnlocks = @($state.unlocks)
+    }
+    foreach ($lvl in $UnlockLevels) {
+        if ([int]$state.level -ge $lvl -and ($existingUnlocks -notcontains $lvl)) {
+            $existingUnlocks += $lvl
+        }
+    }
+    if ($state.PSObject.Properties.Name -contains 'unlocks') {
+        $state.unlocks = $existingUnlocks
+    } else {
+        $state | Add-Member -MemberType NoteProperty -Name 'unlocks' -Value $existingUnlocks
     }
 
     $tmpFile = "$stateFile.tmp"

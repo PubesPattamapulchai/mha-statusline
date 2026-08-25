@@ -54,6 +54,26 @@ hook into `settings.json` automatically; if you run several Claude Code
 installs that share the same `~/.claude`, XP accrues across all of them —
 it's one shared hero career, not per-project.
 
+### Support Course: cosmetic XP-bar unlocks
+
+Crossing the same level thresholds above also unlocks a new glyph pair for
+the XP bar itself — purely cosmetic, same information, different look,
+framed as Support Course gear upgrades. The highest one you've earned is
+always the one shown:
+
+| Level | XP bar becomes |
+|---|---|
+| 1-4 | `▰▱` (default) |
+| 5+ | `▮▯` Twin-Blade Gauge |
+| 10+ | `★☆` Starlight Gauge |
+| 15+ | `⬢⬡` Hex-Plate Gauge |
+| 20+ | `◆◇` Diamond Gauge |
+| 30+ | `●○` Orb Gauge |
+| 40+ | `■□` Billboard Gauge |
+
+Once unlocked, a tier stays unlocked (recorded in the state file's
+`unlocks` array) even if you're looking at an older/lower-level save.
+
 ## Themes
 
 22 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, and All

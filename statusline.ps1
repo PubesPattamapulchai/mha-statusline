@@ -289,9 +289,42 @@ $rankXp    = if ($rankState -and $null -ne $rankState.xp) { [int]$rankState.xp }
 $rankXpToNext = Get-XpToNext $rankLevel
 $rankAbbrev = Get-RankAbbrev $rankLevel
 
+# Support Course cosmetic unlocks — reskins the XP bar's glyph pair once
+# gain-xp.ps1 records the corresponding level threshold in the state file's
+# `unlocks` array (one per existing Rank-stage cutoff). Purely cosmetic:
+# same info, different glyphs. Highest unlocked tier wins; default (▰▱)
+# applies until the first one (level 5) is earned. Levels here must match
+# $UnlockLevels in gain-xp.ps1.
+#
+# Deliberately an array-of-objects, not [ordered]@{level=...} — a PS 5.1
+# ordered-hashtable indexer with integer keys silently resolves to
+# OrderedDictionary's *positional* `[int index]` overload instead of the
+# key-based one, so `$h[40]` looks up position 40, not key 40, and quietly
+# returns nothing. Cost a debugging session to find; array iteration below
+# sidesteps the ambiguity entirely.
+$UnlockGlyphs = @(
+    @{ Level = 40; Filled = '■'; Empty = '□' }   # Billboard Gauge
+    @{ Level = 30; Filled = '●'; Empty = '○' }   # Orb Gauge
+    @{ Level = 20; Filled = '◆'; Empty = '◇' }   # Diamond Gauge
+    @{ Level = 15; Filled = '⬢'; Empty = '⬡' }   # Hex-Plate Gauge
+    @{ Level = 10; Filled = '★'; Empty = '☆' }   # Starlight Gauge
+    @{ Level = 5;  Filled = '▮'; Empty = '▯' }   # Twin-Blade Gauge
+)
+$barFilledGlyph = '▰'
+$barEmptyGlyph  = '▱'
+$unlocks = @()
+if ($rankState -and $rankState.unlocks) { $unlocks = @($rankState.unlocks) }
+foreach ($tier in $UnlockGlyphs) {
+    if ($unlocks -contains $tier.Level) {
+        $barFilledGlyph = $tier.Filled
+        $barEmptyGlyph = $tier.Empty
+        break
+    }
+}
+
 $barSegments = 5
 $rankFilled = [math]::Min($barSegments, [math]::Floor(($rankXp / [double]$rankXpToNext) * $barSegments))
-$rankBar = ('▰' * $rankFilled) + ('▱' * ($barSegments - $rankFilled))
+$rankBar = ($barFilledGlyph * $rankFilled) + ($barEmptyGlyph * ($barSegments - $rankFilled))
 
 $rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar $rankXp/$rankXpToNext$RESET"
 
