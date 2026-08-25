@@ -310,12 +310,17 @@ if ($null -ne $five -or $null -ne $week) {
 
 $separator = "$DIM · $RESET"
 
-# One line: Quirk, Agency, Rank, and (if present) Cooldown, dot-separated.
+# UA's motto, always shown last — theme-neutral (not tied to any character's
+# accent color) since it's the school's line, not any one hero's.
+$mottoPart = "$BOLD$(Ansi256 201)Go beyond, Plus Ultra! 💪$RESET"
+
+# One line: Quirk, Agency, Rank, (if present) Cooldown, then the motto.
 $parts = New-Object System.Collections.Generic.List[string]
 $parts.Add($quirkPart)
 $parts.Add($agencyPart)
 $parts.Add($rankPart)
 if ($cooldownPart) { $parts.Add($cooldownPart) }
+$parts.Add($mottoPart)
 $line = $parts -join $separator
 
 $stdoutWriter = New-Object System.IO.StreamWriter([Console]::OpenStandardOutput(), $utf8NoBom)

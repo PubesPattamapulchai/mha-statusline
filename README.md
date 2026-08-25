@@ -7,7 +7,7 @@ only thing you're guaranteed to have.
 
 One line, kept minimal:
 
-<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 Deku, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%" width="640"></p>
+<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 Deku, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%, dot, Go beyond Plus Ultra" width="640"></p>
 
 ## What it shows
 
@@ -17,6 +17,7 @@ One line, kept minimal:
 | Agency | Current folder name | `workspace.current_dir` |
 | Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
 | ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
+| Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero | static |
 
 The git branch was dropped from the line entirely (not just hidden) to keep
 things minimal — see [Customizing](#customizing) if you want it back.
