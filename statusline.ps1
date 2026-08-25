@@ -2,6 +2,13 @@
 # Quirk (model) | Agency (dir + git branch) | Stamina (ctx remaining %) | Cooldown (5h/7d rate limits) | Cost | Combat log (+/- lines)
 $ErrorActionPreference = 'SilentlyContinue'
 
+# PowerShell's default console encoding is the legacy system codepage, which can't
+# represent the emoji used below — without this, each one renders as "?"/"??".
+# Force UTF-8 (no BOM) for both stdin and stdout so the emoji round-trip correctly.
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding = $utf8NoBom
+[Console]::InputEncoding  = $utf8NoBom
+
 $raw = [Console]::In.ReadToEnd()
 try { $data = $raw | ConvertFrom-Json } catch { $data = $null }
 
