@@ -68,14 +68,14 @@ Might — each with its own Quirk icon, color palette, and hero name:
 | `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | Shoto |
 | `allmight` | All Might | Hero-suit blue and gold | All Might |
 | `iida` | Iida (Tenya) | Engine blue, recipro-burst red | Ingenium |
-| `momo` | Yaoyorozu (Momo) | Creation crimson, gold trim | Creati |
+| `momo` | Yaoyorozu (Momo) | Creation crimson, cream belt | Creati |
 | `kirishima` | Kirishima (Eijiro) | Hardened red, manly orange | Red Riot |
 | `kaminari` | Kaminari (Denki) | Electric yellow | Chargezuma |
 | `jiro` | Jiro (Kyoka) | Earphone-jack purple | Earphone Jack |
-| `tokoyami` | Tokoyami (Fumikage) | Dark Shadow red-black | Tsukuyomi |
+| `tokoyami` | Tokoyami (Fumikage) | Black robe, dark-purple tint | Tsukuyomi |
 | `ashido` | Ashido (Mina) | Acid pink | Pinky |
 | `asui` | Asui (Tsuyu) | Frog green | Froppy |
-| `shoji` | Shoji (Mezo) | Dupli-Arms gray-purple | Tentacole |
+| `shoji` | Shoji (Mezo) | Blue tank top, indigo mask | Tentacole |
 | `sato` | Sato (Rikido) | Sugar-rush brown-orange | Sugarman |
 | `sero` | Sero (Hanta) | Tape gold | Cellophane |
 | `aoyama` | Aoyama (Yuga) | Twinkling gold | Can't Stop Twinkling |

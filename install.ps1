@@ -1,4 +1,4 @@
-# Installs the My Hero Academia statusline for Claude Code.
+﻿# Installs the My Hero Academia statusline for Claude Code.
 # Pure PowerShell — no node, no npm, no jq, no admin rights required.
 #
 # Usage:
@@ -80,3 +80,4 @@ Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
 Write-Host "Change theme anytime: type /mha-theme in Claude Code, or run powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
+Write-Host "Go beyond, Plus Ultra! 💪" -ForegroundColor Magenta
