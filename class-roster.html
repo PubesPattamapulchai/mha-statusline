@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Class 1-A Roster</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --dim: #8b949e;
+    --accent: #ffd700;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 20px 60px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, Segoe UI, system-ui, sans-serif;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--dim); font-size: 13px; margin: 0 0 28px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .panel h2 { font-size: 14px; margin: 0 0 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .04em; }
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    background: #0a0d12;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: SFMono-Regular, Consolas, monospace;
+    font-size: 12.5px;
+    resize: vertical;
+  }
+  .row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+  button, .filebtn {
+    background: #21262d;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button:hover, .filebtn:hover { background: #30363d; }
+  button.primary { background: #238636; border-color: #238636; }
+  button.primary:hover { background: #2ea043; }
+  button.danger { background: transparent; color: #f85149; border-color: #f85149; margin-left: auto; }
+  button.danger:hover { background: rgba(248,81,73,.1); }
+  input[type=file] { display: none; }
+  #status { font-size: 12px; color: var(--dim); margin-top: 8px; min-height: 16px; }
+  #status.err { color: #f85149; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  th { color: var(--dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  tr:last-child td { border-bottom: none; }
+  .rank-cell { font-weight: 700; width: 40px; }
+  .rank-1 { color: var(--accent); }
+  .hero-cell { display: flex; align-items: center; gap: 8px; }
+  .hero-icon { font-size: 18px; }
+  .hero-name { font-weight: 600; }
+  .machine { color: var(--dim); font-size: 12px; }
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar-track { flex: 1; height: 6px; background: #21262d; border-radius: 3px; overflow: hidden; min-width: 60px; }
+  .bar-fill { height: 100%; background: var(--accent); }
+  .empty { text-align: center; color: var(--dim); padding: 40px 0; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏟️ Class 1-A Roster — Sports Festival Board</h1>
+  <p class="sub">
+    A static, local leaderboard for mha-statusline's Rank stats across machines.
+    No server, no sync — paste or load JSON exported by <code>export-stats.ps1</code>
+    on each machine. Entries are saved in this browser only (localStorage), keyed by
+    the export's "label".
+  </p>
+
+  <div class="panel">
+    <h2>Add an entry</h2>
+    <textarea id="input" placeholder='Paste the JSON printed by export-stats.ps1 here (one object, or an array of several) ...'></textarea>
+    <div class="row">
+      <button class="primary" id="addBtn">Add to board</button>
+      <label class="filebtn">
+        Load file…
+        <input type="file" id="fileInput" accept="application/json,.json">
+      </label>
+      <button class="danger" id="clearBtn">Clear board</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Board</h2>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Hero</th><th>Machine</th><th>Level</th><th>Stage</th><th>Progress</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="emptyMsg" style="display:none">No entries yet — add one above.</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'mha-class-roster-v1';
+
+function loadRoster() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveRoster(roster) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(roster));
+}
+
+function setStatus(msg, isError) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = isError ? 'err' : '';
+}
+
+function isValidEntry(e) {
+  return e && typeof e === 'object' && typeof e.level === 'number' && typeof e.heroName === 'string';
+}
+
+function mergeEntries(roster, parsed) {
+  const list = Array.isArray(parsed) ? parsed : [parsed];
+  let added = 0, skipped = 0;
+  for (const entry of list) {
+    if (!isValidEntry(entry)) { skipped++; continue; }
+    const key = entry.label || entry.heroName + '-' + (entry.exportedAt || Math.random());
+    roster[key] = entry;
+    added++;
+  }
+  return { added, skipped };
+}
+
+function render() {
+  const roster = loadRoster();
+  const entries = Object.values(roster).sort((a, b) => {
+    if (b.level !== a.level) return b.level - a.level;
+    return (b.totalXp || 0) - (a.totalXp || 0);
+  });
+
+  const tbody = document.getElementById('rows');
+  const emptyMsg = document.getElementById('emptyMsg');
+  tbody.innerHTML = '';
+
+  if (entries.length === 0) {
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  entries.forEach((e, i) => {
+    const tr = document.createElement('tr');
+    const pct = e.xpToNext ? Math.min(100, Math.round((e.xp / e.xpToNext) * 100)) : 0;
+    tr.innerHTML = `
+      <td class="rank-cell ${i === 0 ? 'rank-1' : ''}">${i + 1}</td>
+      <td><div class="hero-cell"><span class="hero-icon">${escapeHtml(e.icon || '')}</span><span class="hero-name">${escapeHtml(e.heroName || '?')}</span></div></td>
+      <td class="machine">${escapeHtml(e.label || '—')}</td>
+      <td>Lv${escapeHtml(String(e.level))}</td>
+      <td>${escapeHtml(e.rankStage || '')}</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <span class="machine">${escapeHtml(String(e.xp ?? '?'))}/${escapeHtml(String(e.xpToNext ?? '?'))}</span>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function addFromText(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    setStatus('Could not parse that as JSON: ' + e.message, true);
+    return;
+  }
+  const roster = loadRoster();
+  const { added, skipped } = mergeEntries(roster, parsed);
+  if (added === 0) {
+    setStatus('Nothing valid found (needs at least "heroName" and "level" fields).', true);
+    return;
+  }
+  saveRoster(roster);
+  setStatus(`Added ${added} entr${added === 1 ? 'y' : 'ies'}${skipped ? `, skipped ${skipped} invalid` : ''}.`, false);
+  document.getElementById('input').value = '';
+  render();
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  const text = document.getElementById('input').value.trim();
+  if (!text) { setStatus('Paste some JSON first.', true); return; }
+  addFromText(text);
+});
+
+document.getElementById('fileInput').addEventListener('change', (ev) => {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => addFromText(reader.result);
+  reader.onerror = () => setStatus('Could not read that file.', true);
+  reader.readAsText(file);
+  ev.target.value = '';
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear the whole board? This only affects this browser\'s saved copy.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+  setStatus('Board cleared.', false);
+});
+
+render();
+</script>
+</body>
+</html>

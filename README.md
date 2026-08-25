@@ -166,3 +166,21 @@ manually from `~/.claude/` if you want it fully gone.
 All colors, icons and labels live at the top of `statusline.ps1` as plain
 variables (`$C_QUIRK`, `$C_COOLDOWN`, etc.) and inline strings — edit and re-run
 `install.ps1` to pick them up.
+
+## Bonus: Class 1-A roster (multi-machine leaderboard)
+
+If you run Claude Code on more than one machine, `export-stats.ps1` +
+`class-roster.html` give you a manual, local leaderboard across them —
+deliberately not a synced/hosted service, just two files:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File export-stats.ps1 -Label "work laptop"
+```
+
+prints a small JSON blob (theme, hero name, level, XP). Run it on each
+machine, then open `class-roster.html` directly in any browser (no server,
+works from a plain `file://` path) and paste or load each machine's JSON.
+It renders a Sports-Festival-style ranked table and remembers entries in
+that browser's local storage — nothing leaves your machine, nothing syncs
+automatically. Re-running the export and re-adding it (same `-Label`)
+updates that entry instead of duplicating it.
