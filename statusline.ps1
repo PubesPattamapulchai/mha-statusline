@@ -130,7 +130,7 @@ $Themes = @{
         Quirk     = Ansi256 226   # Electrification — yellow
         Agency    = Ansi 97
         Cooldown  = Ansi256 220
-        Hero      = 'Chargebolt'
+        Hero      = 'Chargezuma'
     }
     'jiro' = @{
         Label     = 'Jiro (Kyoka)'
@@ -154,7 +154,7 @@ $Themes = @{
         Quirk     = Ansi256 213   # Acid — pink skin
         Agency    = Ansi 97
         Cooldown  = Ansi256 205
-        Hero      = 'Alien Queen'
+        Hero      = 'Pinky'
     }
     'asui' = @{
         Label     = 'Asui (Tsuyu)'

@@ -70,10 +70,10 @@ Might — each with its own Quirk icon, color palette, and hero name:
 | `iida` | Iida (Tenya) | Engine blue, recipro-burst red | Ingenium |
 | `momo` | Yaoyorozu (Momo) | Creation crimson, gold trim | Creati |
 | `kirishima` | Kirishima (Eijiro) | Hardened red, manly orange | Red Riot |
-| `kaminari` | Kaminari (Denki) | Electric yellow | Chargebolt |
+| `kaminari` | Kaminari (Denki) | Electric yellow | Chargezuma |
 | `jiro` | Jiro (Kyoka) | Earphone-jack purple | Earphone Jack |
 | `tokoyami` | Tokoyami (Fumikage) | Dark Shadow red-black | Tsukuyomi |
-| `ashido` | Ashido (Mina) | Acid pink | Alien Queen |
+| `ashido` | Ashido (Mina) | Acid pink | Pinky |
 | `asui` | Asui (Tsuyu) | Frog green | Froppy |
 | `shoji` | Shoji (Mezo) | Dupli-Arms gray-purple | Tentacole |
 | `sato` | Sato (Rikido) | Sugar-rush brown-orange | Sugarman |
