@@ -25,6 +25,13 @@ $commandsDir = Join-Path $claudeDir 'commands'
 New-Item -ItemType Directory -Force -Path $commandsDir | Out-Null
 Copy-Item -Path (Join-Path $PSScriptRoot 'commands\mha-theme.md') -Destination (Join-Path $commandsDir 'mha-theme.md') -Force
 
+# And agency-sim.ps1 (Phase 1 of the Agency Sim companion feature: logs a
+# patrol/villain/mission event per turn, no narration built on top yet -
+# see docs/PROJECT-IDEAS.md #6) plus the /patrol command that reports it.
+$agencySimDest = Join-Path $claudeDir 'agency-sim.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'agency-sim.ps1') -Destination $agencySimDest -Force
+Copy-Item -Path (Join-Path $PSScriptRoot 'commands\patrol.md') -Destination (Join-Path $commandsDir 'patrol.md') -Force
+
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
 # script update shouldn't reset a theme you already chose via set-theme.ps1.
 $themeFile = Join-Path $claudeDir 'mha-theme.txt'
@@ -74,10 +81,27 @@ if (-not $alreadyWired) {
     $settings.hooks.Stop = @(@($settings.hooks.Stop) + $stopEntry)
 }
 
+# Wire agency-sim.ps1 as its own separate Stop hook entry (alongside
+# gain-xp.ps1's, not replacing it) - same merge-safe pattern.
+$agencySimCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$agencySimDest`""
+$agencySimAlreadyWired = $false
+foreach ($entry in @($settings.hooks.Stop)) {
+    foreach ($h in @($entry.hooks)) {
+        if ($h.command -eq $agencySimCommand) { $agencySimAlreadyWired = $true }
+    }
+}
+if (-not $agencySimAlreadyWired) {
+    $agencySimEntry = [PSCustomObject]@{
+        hooks = @([PSCustomObject]@{ type = 'command'; command = $agencySimCommand; timeout = 10 })
+    }
+    $settings.hooks.Stop = @(@($settings.hooks.Stop) + $agencySimEntry)
+}
+
 $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 
 Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
 Write-Host "Change theme anytime: type /mha-theme in Claude Code, or run powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
+Write-Host "Agency Sim (experimental): patrol/villain/mission events now logged per turn. Check them with /patrol." -ForegroundColor Yellow
 Write-Host "Go beyond, Plus Ultra! 💪" -ForegroundColor Magenta
