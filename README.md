@@ -74,3 +74,49 @@ left on disk — delete it manually if you want it fully gone.
 All colors, icons and labels live at the top of `statusline.ps1` as plain
 variables (`$C_QUIRK`, `$C_BRANCH`, etc.) and inline strings — edit and re-run
 `install.ps1` to pick them up.
+
+## Bonus: commit-hero-names git hook
+
+A separate, optional `prepare-commit-msg` git hook that prefixes
+conventional-commit messages with a themed emoji:
+
+```
+feat: add cool thing        ->  💥 feat: add cool thing
+fix: broken thing           ->  🩹 fix: broken thing
+refactor(api)!: rework      ->  ✨ refactor(api)!: rework
+wip: still working          ->  wip: still working   (unknown type, untouched)
+```
+
+| Type | Emoji | | Type | Emoji |
+|---|---|---|---|---|
+| `feat` | 💥 | | `perf` | ⚡ |
+| `fix` | 🩹 | | `build` | 🏗️ |
+| `refactor` | ✨ | | `ci` | 🤖 |
+| `docs` | 📚 | | `chore` | 🧹 |
+| `test` | 🧪 | | `revert` | ⏪ |
+| `style` | 🎨 | | | |
+
+This is independent of the statusline install above and targets **whatever
+repo you run it from** — git hooks aren't global, so each repo you want this
+in needs its own install:
+
+```powershell
+cd C:\path\to\some-other-repo
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\path\to\mha-statusline\install-git-hook.ps1
+```
+
+It only touches the first line of `feat:`/`fix:`/etc.-style messages that
+don't already start with an emoji — merge and squash commits, and messages
+that don't match a known conventional-commit type, are left untouched.
+Amending an already-prefixed commit doesn't double up the emoji. If the repo
+already has a different `prepare-commit-msg` hook, it's backed up (never
+clobbered) before this one is installed.
+
+Remove it the same way:
+
+```powershell
+cd C:\path\to\some-other-repo
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\path\to\mha-statusline\uninstall-git-hook.ps1
+```
+
+which also restores the backed-up hook, if there was one.

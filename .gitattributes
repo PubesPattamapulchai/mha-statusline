@@ -1,0 +1,5 @@
+# The prepare-commit-msg shim has a #! shebang and is run by Git for
+# Windows' bundled sh — CRLF line endings break shebang parsing there
+# ("bad interpreter" / silently not firing). Force LF regardless of the
+# checking-out machine's core.autocrlf setting.
+hooks/prepare-commit-msg text eol=lf
