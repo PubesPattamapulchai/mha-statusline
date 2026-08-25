@@ -57,7 +57,7 @@ $DIM   = Ansi256 244   # neutral gray for separators — content carries the the
 # ---- Theme catalogue -------------------------------------------------------
 # Each theme is a Quirk icon, the handful of colors minimal mode still uses
 # (Quirk/rank accent, Agency dir text, Cooldown rate-limit text), and the
-# character's catchphrase. Only the character-specific bits change.
+# character's hero name. Only the character-specific bits change.
 $Themes = @{
     'deku' = @{
         Label     = 'Deku (Izuku Midoriya)'
@@ -65,7 +65,7 @@ $Themes = @{
         Quirk     = Ansi256 46    # One For All green
         Agency    = Ansi 97
         Cooldown  = Ansi 96
-        Catch     = 'PLUS ULTRA!'
+        Hero      = 'Deku'
     }
     'uraraka' = @{
         Label     = 'Uraraka (Ochako)'
@@ -73,7 +73,7 @@ $Themes = @{
         Quirk     = Ansi256 211   # zero-gravity pink
         Agency    = Ansi 97
         Cooldown  = Ansi256 117   # sky blue — floating
-        Catch     = 'ZERO GRAVITY!'
+        Hero      = 'Uravity'
     }
     'bakugo' = @{
         Label     = 'Bakugo (Katsuki)'
@@ -81,7 +81,7 @@ $Themes = @{
         Quirk     = Ansi256 208   # explosion orange
         Agency    = Ansi 97
         Cooldown  = Ansi256 214
-        Catch     = 'I AM NUMBER ONE!'
+        Hero      = 'Dynamight'
     }
     'todoroki' = @{
         Label     = 'Todoroki (Shoto)'
@@ -89,7 +89,7 @@ $Themes = @{
         Quirk     = Ansi256 45    # ice blue
         Agency    = Ansi 97
         Cooldown  = Ansi256 39
-        Catch     = 'FLASHFIRE FIST!'
+        Hero      = 'Shoto'
     }
     'allmight' = @{
         Label     = 'All Might'
@@ -97,7 +97,145 @@ $Themes = @{
         Quirk     = Ansi256 33    # hero-suit blue
         Agency    = Ansi 97
         Cooldown  = Ansi256 33
-        Catch     = 'I AM HERE!'
+        Hero      = 'All Might'
+    }
+    # ---- Rest of Class 1-A ---------------------------------------------
+    'iida' = @{
+        Label     = 'Iida (Tenya)'
+        QuirkIcon = '🦿'
+        Quirk     = Ansi256 27    # Engine — exhaust-pipe leg armor blue
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 33
+        Hero      = 'Ingenium'
+    }
+    'momo' = @{
+        Label     = 'Yaoyorozu (Momo)'
+        QuirkIcon = '✨'
+        Quirk     = Ansi256 160   # Creation — black-and-red hero costume
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 217
+        Hero      = 'Creati'
+    }
+    'kirishima' = @{
+        Label     = 'Kirishima (Eijiro)'
+        QuirkIcon = '🪨'
+        Quirk     = Ansi256 202   # Hardening — spiky red hair
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 208
+        Hero      = 'Red Riot'
+    }
+    'kaminari' = @{
+        Label     = 'Kaminari (Denki)'
+        QuirkIcon = '⚡'
+        Quirk     = Ansi256 226   # Electrification — yellow
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 220
+        Hero      = 'Chargebolt'
+    }
+    'jiro' = @{
+        Label     = 'Jiro (Kyoka)'
+        QuirkIcon = '🎧'
+        Quirk     = Ansi256 141   # Earphone Jack — purple
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 99
+        Hero      = 'Earphone Jack'
+    }
+    'tokoyami' = @{
+        Label     = 'Tokoyami (Fumikage)'
+        QuirkIcon = '🌑'
+        Quirk     = Ansi256 88    # Dark Shadow — dark red/black
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 92
+        Hero      = 'Tsukuyomi'
+    }
+    'ashido' = @{
+        Label     = 'Ashido (Mina)'
+        QuirkIcon = '🧪'
+        Quirk     = Ansi256 213   # Acid — pink skin
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 205
+        Hero      = 'Alien Queen'
+    }
+    'asui' = @{
+        Label     = 'Asui (Tsuyu)'
+        QuirkIcon = '🐸'
+        Quirk     = Ansi256 34    # Frog — green
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 82
+        Hero      = 'Froppy'
+    }
+    'shoji' = @{
+        Label     = 'Shoji (Mezo)'
+        QuirkIcon = '🐙'
+        Quirk     = Ansi256 103   # Dupli-Arms — muted purple-gray
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 60
+        Hero      = 'Tentacole'
+    }
+    'sato' = @{
+        Label     = 'Sato (Rikido)'
+        QuirkIcon = '🍬'
+        Quirk     = Ansi256 172   # Sugar Rush — brown-orange
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 214
+        Hero      = 'Sugarman'
+    }
+    'sero' = @{
+        Label     = 'Sero (Hanta)'
+        QuirkIcon = '📼'
+        Quirk     = Ansi256 178   # Tape — gold hero suit
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 178
+        Hero      = 'Cellophane'
+    }
+    'aoyama' = @{
+        Label     = 'Aoyama (Yuga)'
+        QuirkIcon = '💫'
+        Quirk     = Ansi256 220   # Navel Laser — blonde/gold sparkle
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 226
+        Hero      = "Can't Stop Twinkling"
+    }
+    'ojiro' = @{
+        Label     = 'Ojiro (Mashirao)'
+        QuirkIcon = '🐒'
+        Quirk     = Ansi256 94    # Tail — plain brown gi
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 137
+        Hero      = 'Tailman'
+    }
+    'hagakure' = @{
+        Label     = 'Hagakure (Toru)'
+        QuirkIcon = '🫥'
+        Quirk     = Ansi256 195   # Invisibility — barely-there white
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 159
+        Hero      = 'Invisible Girl'
+    }
+    'koda' = @{
+        Label     = 'Koda (Koji)'
+        QuirkIcon = '🦉'
+        Quirk     = Ansi256 22    # Anivoice — quiet forest green
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 65
+        Hero      = 'Anima'
+    }
+    'mineta' = @{
+        Label     = 'Mineta (Minoru)'
+        QuirkIcon = '🟣'
+        Quirk     = Ansi256 129   # Pop Off — purple sticky balls
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 93
+        Hero      = 'Grape Juice'
+    }
+    # ---- Homeroom teacher -----------------------------------------------
+    'aizawa' = @{
+        Label     = 'Aizawa-sensei (Shota)'
+        QuirkIcon = '🧣'
+        Quirk     = Ansi256 243   # Erasure — tired all-black everything
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 60
+        Hero      = 'Eraser Head'
     }
 }
 
@@ -118,7 +256,7 @@ $C_QUIRK    = $theme.Quirk
 $C_AGENCY   = $theme.Agency
 $C_COOLDOWN = $theme.Cooldown
 $QUIRK_ICON = $theme.QuirkIcon
-$CATCH      = $theme.Catch
+$HERO_NAME  = $theme.Hero
 
 $model = Get-Prop $data @('model', 'display_name')
 if (-not $model) { $model = '?' }
@@ -132,9 +270,9 @@ if (-not $dirName) { $dirName = $dir }
 $five = Get-Prop $data @('rate_limits', 'five_hour', 'used_percentage')
 $week = Get-Prop $data @('rate_limits', 'seven_day', 'used_percentage')
 
-# Quirk (model), tagged with the character's catchphrase
+# Quirk (model), tagged with the character's hero name
 $quirkPart = "$BOLD$C_QUIRK$QUIRK_ICON $model$RESET"
-if ($CATCH) { $quirkPart += " $BOLD$C_QUIRK$CATCH$RESET" }
+if ($HERO_NAME) { $quirkPart += " $BOLD$C_QUIRK$HERO_NAME$RESET" }
 
 # Agency (current dir)
 $agencyPart = "$C_AGENCY$dirName$RESET"

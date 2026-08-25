@@ -7,13 +7,13 @@ only thing you're guaranteed to have.
 
 One line, kept minimal:
 
-<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 PLUS ULTRA, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%" width="640"></p>
+<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 Deku, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%" width="640"></p>
 
 ## What it shows
 
 | Segment | Meaning | Source |
 |---|---|---|
-| 💥 Quirk | Model name + the character's catchphrase (icon/phrase vary by [theme](#themes) — ✊ PLUS ULTRA! for Deku, shown above) | `model.display_name` |
+| 💥 Quirk | Model name + the character's hero name (icon/name vary by [theme](#themes) — ✊ Deku for Deku, shown above) | `model.display_name` |
 | Agency | Current folder name | `workspace.current_dir` |
 | Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
 | ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
@@ -55,17 +55,35 @@ it's one shared hero career, not per-project.
 
 ## Themes
 
-Five character themes, each with its own Quirk icon, color palette, and catchphrase:
+22 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, and All
+Might — each with its own Quirk icon, color palette, and hero name:
 
-<p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme: fist green Deku, planet pink Uraraka, explosion orange Bakugo, snowflake blue Todoroki, flexed-bicep blue All Might" width="420"></p>
+<p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme, one per Class 1-A student plus Aizawa-sensei and All Might" width="640"></p>
 
-| Theme key | Character | Colors | Catchphrase |
+| Theme key | Character | Colors | Hero name |
 |---|---|---|---|
-| `deku` *(default)* | Deku (Izuku Midoriya) | One For All green, hero-red accents | PLUS ULTRA! |
-| `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown | ZERO GRAVITY! |
-| `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents | I AM NUMBER ONE! |
-| `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | FLASHFIRE FIST! |
-| `allmight` | All Might | Hero-suit blue and gold | I AM HERE! |
+| `deku` *(default)* | Deku (Izuku Midoriya) | One For All green | Deku |
+| `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents | Dynamight |
+| `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown | Uravity |
+| `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | Shoto |
+| `allmight` | All Might | Hero-suit blue and gold | All Might |
+| `iida` | Iida (Tenya) | Engine blue, recipro-burst red | Ingenium |
+| `momo` | Yaoyorozu (Momo) | Creation crimson, gold trim | Creati |
+| `kirishima` | Kirishima (Eijiro) | Hardened red, manly orange | Red Riot |
+| `kaminari` | Kaminari (Denki) | Electric yellow | Chargebolt |
+| `jiro` | Jiro (Kyoka) | Earphone-jack purple | Earphone Jack |
+| `tokoyami` | Tokoyami (Fumikage) | Dark Shadow red-black | Tsukuyomi |
+| `ashido` | Ashido (Mina) | Acid pink | Alien Queen |
+| `asui` | Asui (Tsuyu) | Frog green | Froppy |
+| `shoji` | Shoji (Mezo) | Dupli-Arms gray-purple | Tentacole |
+| `sato` | Sato (Rikido) | Sugar-rush brown-orange | Sugarman |
+| `sero` | Sero (Hanta) | Tape gold | Cellophane |
+| `aoyama` | Aoyama (Yuga) | Twinkling gold | Can't Stop Twinkling |
+| `ojiro` | Ojiro (Mashirao) | Tail brown | Tailman |
+| `hagakure` | Hagakure (Toru) | Barely-there white | Invisible Girl |
+| `koda` | Koda (Koji) | Quiet forest green | Anima |
+| `mineta` | Mineta (Minoru) | Pop-off purple | Grape Juice |
+| `aizawa` | Aizawa-sensei (Shota) | Tired gray, capture-scarf | Eraser Head |
 
 `install.ps1` asks you to pick one on first install. To switch later, the
 easiest way is right from the Claude Code chat:
@@ -139,12 +157,11 @@ manually from `~/.claude/` if you want it fully gone.
 ## Requirements
 
 - Windows PowerShell 5.1+ (built into every Windows install) or PowerShell 7+.
-- `git` on PATH, only for the branch name — everything else still works without it.
 - A terminal that renders ANSI/VT100 escape codes (Windows Terminal, VS Code's
   integrated terminal, modern `conhost` — all of what Claude Code normally runs in).
 
 ## Customizing
 
 All colors, icons and labels live at the top of `statusline.ps1` as plain
-variables (`$C_QUIRK`, `$C_BRANCH`, etc.) and inline strings — edit and re-run
+variables (`$C_QUIRK`, `$C_COOLDOWN`, etc.) and inline strings — edit and re-run
 `install.ps1` to pick them up.

@@ -6,17 +6,39 @@
 #   powershell -NoProfile -ExecutionPolicy Bypass -File set-theme.ps1            # interactive menu
 #   powershell -NoProfile -ExecutionPolicy Bypass -File set-theme.ps1 -Theme bakugo
 param(
-    [ValidateSet('deku', 'uraraka', 'bakugo', 'todoroki', 'allmight')]
+    [ValidateSet(
+        'deku', 'uraraka', 'bakugo', 'todoroki', 'allmight',
+        'iida', 'momo', 'kirishima', 'kaminari', 'jiro', 'tokoyami', 'ashido',
+        'asui', 'shoji', 'sato', 'sero', 'aoyama', 'ojiro', 'hagakure', 'koda',
+        'mineta', 'aizawa'
+    )]
     [string]$Theme
 )
 $ErrorActionPreference = 'Stop'
 
 $themes = [ordered]@{
-    'deku'     = 'Deku (Izuku Midoriya) — One For All green, hero-red accents [default]'
-    'uraraka'  = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
-    'bakugo'   = 'Bakugo (Katsuki) — explosion orange, olive accents'
-    'todoroki' = 'Todoroki (Shoto) — half ice-blue, half fire-red'
-    'allmight' = 'All Might — hero-suit blue and gold'
+    'deku'      = 'Deku (Izuku Midoriya) — One For All green, hero-red accents [default]'
+    'uraraka'   = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
+    'bakugo'    = 'Bakugo (Katsuki) — explosion orange, olive accents'
+    'todoroki'  = 'Todoroki (Shoto) — half ice-blue, half fire-red'
+    'allmight'  = 'All Might — hero-suit blue and gold'
+    'iida'      = 'Iida (Tenya) — Engine blue, recipro-burst red'
+    'momo'      = 'Yaoyorozu (Momo) — Creation crimson, gold trim'
+    'kirishima' = 'Kirishima (Eijiro) — hardened red, manly orange'
+    'kaminari'  = 'Kaminari (Denki) — electric yellow'
+    'jiro'      = 'Jiro (Kyoka) — earphone-jack purple'
+    'tokoyami'  = 'Tokoyami (Fumikage) — Dark Shadow red-black'
+    'ashido'    = 'Ashido (Mina) — acid pink'
+    'asui'      = 'Asui (Tsuyu) — frog green'
+    'shoji'     = 'Shoji (Mezo) — Dupli-Arms gray-purple'
+    'sato'      = 'Sato (Rikido) — sugar-rush brown-orange'
+    'sero'      = 'Sero (Hanta) — tape gold'
+    'aoyama'    = 'Aoyama (Yuga) — twinkling gold'
+    'ojiro'     = 'Ojiro (Mashirao) — tail brown'
+    'hagakure'  = 'Hagakure (Toru) — barely-there white'
+    'koda'      = 'Koda (Koji) — quiet forest green'
+    'mineta'    = 'Mineta (Minoru) — pop-off purple'
+    'aizawa'    = 'Aizawa-sensei (Shota) — homeroom teacher, tired gray'
 }
 
 if (-not $Theme) {
