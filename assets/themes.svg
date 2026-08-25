@@ -1,0 +1,25 @@
+<svg width="440" height="234" viewBox="0 0 440 234" xmlns="http://www.w3.org/2000/svg"
+     font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace">
+  <defs>
+    <clipPath id="g"><rect width="440" height="234" rx="12"/></clipPath>
+  </defs>
+  <g clip-path="url(#g)">
+    <rect width="440" height="234" fill="#0d1117"/>
+    <text x="20" y="28" font-size="12" fill="#8b949e">Quirk icon + color, per theme</text>
+
+    <text x="20" y="62" font-size="17" fill="#00FF00" font-weight="bold">✊ Sonnet 5</text>
+    <text x="300" y="62" font-size="12" fill="#8b949e">deku (default)</text>
+
+    <text x="20" y="96" font-size="17" fill="#FF87AF" font-weight="bold">🪐 Sonnet 5</text>
+    <text x="300" y="96" font-size="12" fill="#8b949e">uraraka</text>
+
+    <text x="20" y="130" font-size="17" fill="#FF8700" font-weight="bold">💥 Sonnet 5</text>
+    <text x="300" y="130" font-size="12" fill="#8b949e">bakugo</text>
+
+    <text x="20" y="164" font-size="17" fill="#00D7FF" font-weight="bold">❄️ Sonnet 5</text>
+    <text x="300" y="164" font-size="12" fill="#8b949e">todoroki</text>
+
+    <text x="20" y="198" font-size="17" fill="#0087FF" font-weight="bold">💪 Sonnet 5</text>
+    <text x="300" y="198" font-size="12" fill="#8b949e">allmight</text>
+  </g>
+</svg>

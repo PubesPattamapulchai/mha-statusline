@@ -7,17 +7,13 @@ only thing you're guaranteed to have.
 
 Three lines, so nothing gets cut off by terminal width:
 
-```
-💥 Sonnet 5  ⚡  🏫 my-project ⚡main
-🎓 U.A. Year 2 Student Lv7  ▰▰▰▰▰▰▱▱▱▱ 84/140
-🔋 Stamina:85% PLUS ULTRA!  ⚡  ⏱ 5h:18% 7d:63%  ⚡  🪙 $1.23  ⚡  +87 -12
-```
+<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: line 1 reads &#39;fist Sonnet 5, school my-project, bolt main&#39;; line 2 reads &#39;graduation cap U.A. Year 2 Student Lv7, XP bar 84 of 140&#39;; line 3 reads &#39;battery Stamina 85% PLUS ULTRA, stopwatch 5h 18% 7d 63%, coin $1.23, +87 -12&#39;" width="640"></p>
 
 ## What it shows
 
 | Segment | Meaning | Source |
 |---|---|---|
-| 💥 Quirk | Model name | `model.display_name` |
+| 💥 Quirk | Model name (icon varies by [theme](#themes) — ✊ for Deku, shown above) | `model.display_name` |
 | 🎓 Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
 | 🏫 Agency | Current folder name + git branch (⚡ red) | `workspace.current_dir` / `git branch --show-current` |
 | 🔋 Stamina | Context window remaining % — green ≥50%, gold 20-50%, red <20%. Shows **PLUS ULTRA!** at ≥80% | `context_window.remaining_percentage` |
@@ -58,6 +54,8 @@ it's one shared hero career, not per-project.
 
 Five character themes, each with its own Quirk icon, color palette, and
 high-stamina catchphrase:
+
+<p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme: fist green Deku, planet pink Uraraka, explosion orange Bakugo, snowflake blue Todoroki, flexed-bicep blue All Might" width="420"></p>
 
 | Theme key | Character | Colors |
 |---|---|---|

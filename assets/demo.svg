@@ -1,0 +1,35 @@
+<svg width="760" height="176" viewBox="0 0 760 176" xmlns="http://www.w3.org/2000/svg"
+     font-family="SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace">
+  <defs>
+    <clipPath id="card"><rect width="760" height="176" rx="12"/></clipPath>
+  </defs>
+  <g clip-path="url(#card)">
+    <rect width="760" height="176" fill="#0d1117"/>
+    <rect width="760" height="34" fill="#161b22"/>
+    <circle cx="22" cy="17" r="6" fill="#ff5f56"/>
+    <circle cx="42" cy="17" r="6" fill="#ffbd2e"/>
+    <circle cx="62" cy="17" r="6" fill="#27c93f"/>
+    <text x="380" y="21" font-size="12" fill="#8b949e" text-anchor="middle">claude code — mha-statusline (deku theme)</text>
+
+    <text x="24" y="76" font-size="17">
+      <tspan fill="#00FF00" font-weight="bold">✊ Sonnet 5</tspan>
+      <tspan fill="#FFD700">   ⚡   </tspan>
+      <tspan fill="#E6E6E6">🏫 my-project</tspan>
+      <tspan fill="#FF0000"> ⚡main</tspan>
+    </text>
+
+    <text x="24" y="110" font-size="17" fill="#00FF00">🎓 U.A. Year 2 Student Lv7  ▰▰▰▰▰▰▱▱▱▱ 84/140</text>
+
+    <text x="24" y="144" font-size="17">
+      <tspan fill="#00FF00">🔋 Stamina:85%</tspan>
+      <tspan fill="#00FF00" font-weight="bold"> PLUS ULTRA!</tspan>
+      <tspan fill="#FFD700">   ⚡   </tspan>
+      <tspan fill="#3FFFFF">⏱ 5h:18% 7d:63%</tspan>
+      <tspan fill="#FFD700">   ⚡   </tspan>
+      <tspan fill="#FFD700">🪙 $1.23</tspan>
+      <tspan fill="#FFD700">   ⚡   </tspan>
+      <tspan fill="#00FF00">+87</tspan>
+      <tspan fill="#FF0000"> -12</tspan>
+    </text>
+  </g>
+</svg>
