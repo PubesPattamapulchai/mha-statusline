@@ -12,6 +12,14 @@ $src = Join-Path $PSScriptRoot 'statusline.ps1'
 $dest = Join-Path $claudeDir 'statusline.ps1'
 Copy-Item -Path $src -Destination $dest -Force
 
+# "UA Hero Briefing" output style (optional bonus). Copying the file alone
+# does not activate it - Claude Code only applies an output style once you
+# select it via /config or set outputStyle in settings.json - so this is
+# safe to always drop in; it does nothing until you opt in yourself.
+$outputStylesDir = Join-Path $claudeDir 'output-styles'
+New-Item -ItemType Directory -Force -Path $outputStylesDir | Out-Null
+Copy-Item -Path (Join-Path $PSScriptRoot 'output-styles\ua-hero.md') -Destination (Join-Path $outputStylesDir 'ua-hero.md') -Force
+
 $settingsPath = Join-Path $claudeDir 'settings.json'
 if (Test-Path $settingsPath) {
     $settings = Get-Content -Raw $settingsPath | ConvertFrom-Json
@@ -35,3 +43,4 @@ $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding
 Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
+Write-Host "Optional: try the 'UA Hero Briefing' output style via /config (not enabled by default)." -ForegroundColor Yellow

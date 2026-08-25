@@ -20,4 +20,13 @@ if ($settings.PSObject.Properties.Name -contains 'statusLine') {
     Write-Host "No statusLine entry found — nothing to do." -ForegroundColor Yellow
 }
 
+$outputStylePath = Join-Path $HOME '.claude\output-styles\ua-hero.md'
+if (Test-Path $outputStylePath) {
+    Remove-Item -Path $outputStylePath -Force
+    Write-Host "Removed $outputStylePath" -ForegroundColor Green
+    if ($settings.outputStyle -eq 'UA Hero Briefing') {
+        Write-Host "Note: outputStyle in settings.json was still set to 'UA Hero Briefing' - switch it via /config, since the file backing it is now gone." -ForegroundColor Yellow
+    }
+}
+
 Write-Host "Restart Claude Code to see the change." -ForegroundColor Yellow
