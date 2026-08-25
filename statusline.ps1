@@ -50,6 +50,30 @@ function Get-RankAbbrev([int]$level) {
     return 'Y1'
 }
 
+# Quirk Registry: boxed "LEVEL UP!" banner shown above the normal status
+# line for a short window after crossing a multiple-of-10 level (gain-xp.ps1
+# sets the expiry). Box width adapts to the longest hero name so e.g. "Can't
+# Stop Twinkling" doesn't get clipped.
+function Get-LevelUpBanner([string]$Icon, [string]$HeroName, [int]$Level, [string]$StageAbbrev, [string]$Color, [string]$Reset) {
+    $contentLines = @(
+        "LEVEL UP!  Lv$Level"
+        "$Icon $($HeroName.ToUpper())"
+        "$StageAbbrev unlocked"
+    )
+    $innerWidth = ($contentLines | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
+    $boxWidth = $innerWidth + 4
+    $lines = New-Object System.Collections.Generic.List[string]
+    $lines.Add("$Color╔$('═' * $boxWidth)╗$Reset")
+    foreach ($cl in $contentLines) {
+        $padTotal = $boxWidth - $cl.Length
+        $padLeft = [math]::Floor($padTotal / 2)
+        $padRight = $padTotal - $padLeft
+        $lines.Add("$Color║$Reset" + (' ' * $padLeft) + $cl + (' ' * $padRight) + "$Color║$Reset")
+    }
+    $lines.Add("$Color╚$('═' * $boxWidth)╝$Reset")
+    return $lines
+}
+
 $RESET = Ansi 0
 $BOLD  = Ansi 1
 $DIM   = Ansi256 244   # neutral gray for separators — content carries the theme color, not punctuation
@@ -295,6 +319,19 @@ $rankBar = ('▰' * $rankFilled) + ('▱' * ($barSegments - $rankFilled))
 
 $rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar $rankXp/$rankXpToNext$RESET"
 
+# Level-up banner — active only for a short window after gain-xp.ps1 records
+# one (see its comment for why this is time-boxed rather than "shown once":
+# Stop-hook stdout isn't reliably visible, statusline.ps1's output is).
+$bannerLines = @()
+if ($rankState -and $rankState.bannerLevel -and $rankState.bannerUntil) {
+    $nowEpoch = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    if ($nowEpoch -lt [long]$rankState.bannerUntil) {
+        $bannerLevel = [int]$rankState.bannerLevel
+        $bannerStage = Get-RankAbbrev $bannerLevel
+        $bannerLines = Get-LevelUpBanner -Icon $QUIRK_ICON -HeroName $HERO_NAME -Level $bannerLevel -StageAbbrev $bannerStage -Color $C_QUIRK -Reset $RESET
+    }
+}
+
 # Cooldown (5h/7d rate limits) — the only remaining optional segment
 $cooldownPart = $null
 if ($null -ne $five -or $null -ne $week) {
@@ -323,6 +360,11 @@ if ($cooldownPart) { $parts.Add($cooldownPart) }
 $parts.Add($mottoPart)
 $line = $parts -join $separator
 
+$outputLines = New-Object System.Collections.Generic.List[string]
+foreach ($bl in $bannerLines) { $outputLines.Add($bl) }
+$outputLines.Add($line)
+$output = $outputLines -join "`n"
+
 $stdoutWriter = New-Object System.IO.StreamWriter([Console]::OpenStandardOutput(), $utf8NoBom)
-$stdoutWriter.Write($line)
+$stdoutWriter.Write($output)
 $stdoutWriter.Flush()

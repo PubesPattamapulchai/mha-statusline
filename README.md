@@ -54,6 +54,26 @@ hook into `settings.json` automatically; if you run several Claude Code
 installs that share the same `~/.claude`, XP accrues across all of them —
 it's one shared hero career, not per-project.
 
+### Quirk Registry: level-up banner
+
+Crossing a multiple-of-10 level (10, 20, 30, 40, ...) briefly shows a boxed
+"LEVEL UP!" banner above the normal line:
+
+```
+╔═══════════════════╗
+║  LEVEL UP!  Lv10  ║
+║      ✊ DEKU       ║
+║    Y3 unlocked    ║
+╚═══════════════════╝
+```
+
+It's time-boxed (visible for ~20 seconds after the level-up), not
+"shown once" — a `Stop` hook's own stdout isn't reliably visible to you
+directly, so `gain-xp.ps1` just records the milestone + an expiry in the
+state file, and `statusline.ps1` (which *is* always rendered) shows the
+banner for as long as that window is open, then quietly drops back to the
+normal single line on its own.
+
 ## Themes
 
 22 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, and All

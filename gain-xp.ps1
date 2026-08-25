@@ -42,10 +42,41 @@ try {
     $gain = Get-Random -Minimum 8 -Maximum 16
     $state.xp = [int]$state.xp + $gain
     $state.totalXp = [int]$state.totalXp + $gain
+    $levelBefore = [int]$state.level
 
     while ([int]$state.xp -ge (Get-XpToNext ([int]$state.level))) {
         $state.xp = [int]$state.xp - (Get-XpToNext ([int]$state.level))
         $state.level = [int]$state.level + 1
+    }
+
+    # Quirk Registry: crossing a multiple-of-10 level is a level-up banner
+    # moment. Record the highest one just crossed (a single big XP grant can
+    # jump several at once) plus an expiry timestamp -- statusline.ps1 shows
+    # the banner only while "now" is before that expiry, then it lapses on
+    # its own. Deliberately NOT "show until acknowledged": Stop-hook stdout
+    # isn't shown to the user directly (only to the debug log / Claude's own
+    # context, confirmed against the current hooks docs before building
+    # this), so there is no reliable "hook prints it once" channel here --
+    # a time-boxed flag that statusline.ps1 (which IS always rendered) picks
+    # up is the only channel that actually reaches the terminal.
+    $levelAfter = [int]$state.level
+    $milestone = 0
+    for ($lvl = $levelBefore + 1; $lvl -le $levelAfter; $lvl++) {
+        if ($lvl % 10 -eq 0) { $milestone = $lvl }
+    }
+    if ($milestone -gt 0) {
+        $bannerLevel = $milestone
+        $bannerUntil = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() + 20
+        if ($state.PSObject.Properties.Name -contains 'bannerLevel') {
+            $state.bannerLevel = $bannerLevel
+        } else {
+            $state | Add-Member -MemberType NoteProperty -Name 'bannerLevel' -Value $bannerLevel
+        }
+        if ($state.PSObject.Properties.Name -contains 'bannerUntil') {
+            $state.bannerUntil = $bannerUntil
+        } else {
+            $state | Add-Member -MemberType NoteProperty -Name 'bannerUntil' -Value $bannerUntil
+        }
     }
 
     $tmpFile = "$stateFile.tmp"
