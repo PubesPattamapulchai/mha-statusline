@@ -25,6 +25,11 @@ $commandsDir = Join-Path $claudeDir 'commands'
 New-Item -ItemType Directory -Force -Path $commandsDir | Out-Null
 Copy-Item -Path (Join-Path $PSScriptRoot 'commands\mha-theme.md') -Destination (Join-Path $commandsDir 'mha-theme.md') -Force
 
+# And villain-alert.ps1, the Notification hook that reskins "Claude needs
+# your attention" notifications as themed alerts.
+$villainAlertDest = Join-Path $claudeDir 'villain-alert.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'villain-alert.ps1') -Destination $villainAlertDest -Force
+
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
 # script update shouldn't reset a theme you already chose via set-theme.ps1.
 $themeFile = Join-Path $claudeDir 'mha-theme.txt'
@@ -74,10 +79,33 @@ if (-not $alreadyWired) {
     $settings.hooks.Stop = @(@($settings.hooks.Stop) + $stopEntry)
 }
 
+# Wire villain-alert.ps1 into the Notification hook, matched to only the
+# "Claude actually needs you" notification types -- not every notification,
+# to avoid alert fatigue. Same merge-safe pattern as the Stop hook above.
+if ($settings.hooks.PSObject.Properties.Name -notcontains 'Notification') {
+    $settings.hooks | Add-Member -MemberType NoteProperty -Name 'Notification' -Value @()
+}
+$villainAlertCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$villainAlertDest`""
+$villainAlertMatcher = 'permission_prompt|agent_needs_input|idle_prompt'
+$villainAlreadyWired = $false
+foreach ($entry in @($settings.hooks.Notification)) {
+    foreach ($h in @($entry.hooks)) {
+        if ($h.command -eq $villainAlertCommand) { $villainAlreadyWired = $true }
+    }
+}
+if (-not $villainAlreadyWired) {
+    $notificationEntry = [PSCustomObject]@{
+        matcher = $villainAlertMatcher
+        hooks   = @([PSCustomObject]@{ type = 'command'; command = $villainAlertCommand; timeout = 5 })
+    }
+    $settings.hooks.Notification = @(@($settings.hooks.Notification) + $notificationEntry)
+}
+
 $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 
 Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
 Write-Host "Change theme anytime: type /mha-theme in Claude Code, or run powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
+Write-Host "Villain alerts wired: a bell + desktop notification fires when Claude needs your input." -ForegroundColor Yellow
 Write-Host "Go beyond, Plus Ultra! 💪" -ForegroundColor Magenta
