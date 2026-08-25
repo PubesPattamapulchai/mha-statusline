@@ -74,3 +74,18 @@ left on disk — delete it manually if you want it fully gone.
 All colors, icons and labels live at the top of `statusline.ps1` as plain
 variables (`$C_QUIRK`, `$C_BRANCH`, etc.) and inline strings — edit and re-run
 `install.ps1` to pick them up.
+
+## Bonus: Aizawa-sensei strict code review
+
+`install.ps1` also drops in an `aizawa` subagent and a `/aizawa-review`
+command — a stricter, no-fluff alternative to a default code review. Flat,
+blunt, verdict-first, no praise-sandwiching; only says something is good
+when it actually is. Read-only (`Read`/`Grep`/`Glob`/`Bash` for running
+tests, no `Edit`/`Write`) — it reviews, it doesn't fix.
+
+```
+/aizawa-review
+```
+
+or narrow the scope: `/aizawa-review just the auth changes`. See
+`agents/aizawa.md` for the full persona.

@@ -12,6 +12,16 @@ $src = Join-Path $PSScriptRoot 'statusline.ps1'
 $dest = Join-Path $claudeDir 'statusline.ps1'
 Copy-Item -Path $src -Destination $dest -Force
 
+# Aizawa-sensei review subagent + /aizawa-review command (optional bonus,
+# same "just copy the file" install as everything else here).
+$agentsDir = Join-Path $claudeDir 'agents'
+New-Item -ItemType Directory -Force -Path $agentsDir | Out-Null
+Copy-Item -Path (Join-Path $PSScriptRoot 'agents\aizawa.md') -Destination (Join-Path $agentsDir 'aizawa.md') -Force
+
+$commandsDir = Join-Path $claudeDir 'commands'
+New-Item -ItemType Directory -Force -Path $commandsDir | Out-Null
+Copy-Item -Path (Join-Path $PSScriptRoot 'commands\aizawa-review.md') -Destination (Join-Path $commandsDir 'aizawa-review.md') -Force
+
 $settingsPath = Join-Path $claudeDir 'settings.json'
 if (Test-Path $settingsPath) {
     $settings = Get-Content -Raw $settingsPath | ConvertFrom-Json
@@ -35,3 +45,4 @@ $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding
 Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
+Write-Host "Try the strict reviewer: /aizawa-review" -ForegroundColor Yellow

@@ -20,4 +20,15 @@ if ($settings.PSObject.Properties.Name -contains 'statusLine') {
     Write-Host "No statusLine entry found — nothing to do." -ForegroundColor Yellow
 }
 
+$agentPath = Join-Path $HOME '.claude\agents\aizawa.md'
+if (Test-Path $agentPath) {
+    Remove-Item -Path $agentPath -Force
+    Write-Host "Removed $agentPath" -ForegroundColor Green
+}
+$commandPath = Join-Path $HOME '.claude\commands\aizawa-review.md'
+if (Test-Path $commandPath) {
+    Remove-Item -Path $commandPath -Force
+    Write-Host "Removed $commandPath" -ForegroundColor Green
+}
+
 Write-Host "Restart Claude Code to see the change." -ForegroundColor Yellow
