@@ -31,12 +31,9 @@ $ESC = [char]27
 function Ansi([int]$code) { "$ESC[${code}m" }
 function Ansi256([int]$code) { "$ESC[38;5;${code}m" }   # closer per-character colors than the base 16
 
-# XP needed to clear a level, and the short career-stage code shown for it — a
-# U.A. student climbing through school years, a license, a sidekick job, your
-# own agency, and finally the JP Hero Billboard Chart counting down toward #1.
-# Mirrors gain-xp.ps1 (the Stop hook that actually grants XP) — kept in sync
-# by hand since both are single flat scripts with no shared module.
-function Get-XpToNext([int]$level) { 50 + ($level - 1) * 15 }
+# The short career-stage code shown for a level — a U.A. student climbing
+# through school years, a license, a sidekick job, your own agency, and
+# finally the JP Hero Billboard Chart counting down toward #1.
 function Get-RankAbbrev([int]$level) {
     if ($level -ge 40) {
         $rank = [math]::Max(1, 300 - ($level - 40) * 5)
@@ -239,6 +236,16 @@ $Themes = @{
     }
 }
 
+# Rotation order for auto theme-cycling (see below) — same order as
+# set-theme.ps1's menu. Plain @{} hashtables in PowerShell don't preserve
+# insertion order, so this array is the one place that does.
+$ThemeOrder = @(
+    'deku', 'uraraka', 'bakugo', 'todoroki', 'allmight',
+    'iida', 'momo', 'kirishima', 'kaminari', 'jiro', 'tokoyami', 'ashido',
+    'asui', 'shoji', 'sato', 'sero', 'aoyama', 'ojiro', 'hagakure', 'koda',
+    'mineta', 'aizawa'
+)
+
 # Pick a theme: $env:MHA_STATUSLINE_THEME overrides the saved config, which
 # overrides the default. `mha-theme.txt` lives next to this script — once
 # installed that's ~/.claude/mha-theme.txt — so set-theme.ps1 can flip it
@@ -249,7 +256,20 @@ if (-not $themeKey) {
     if (Test-Path $themeFile) { $themeKey = Get-Content -Raw $themeFile }
 }
 if ($themeKey) { $themeKey = $themeKey.Trim([char]0xFEFF, ' ', "`r", "`n").ToLowerInvariant() }
-if (-not $themeKey -or -not $Themes.ContainsKey($themeKey)) { $themeKey = 'deku' }
+
+# 'auto' (and no saved theme at all) means "don't pin one, cycle the whole
+# roster automatically". This is purely a function of wall-clock time, not a
+# background process or scheduled task: statusline.ps1 re-runs on every
+# render, and Claude Code renders often enough that a 5-minute bucket feels
+# live. Deriving the bucket from UTC time (not random) keeps parallel
+# sessions/panes in agreement on which theme is "current" right now.
+if (-not $themeKey -or $themeKey -eq 'auto') {
+    $epochMinutes = [math]::Floor(([DateTimeOffset]::UtcNow).ToUnixTimeSeconds() / 60)
+    $bucket = [math]::Floor($epochMinutes / 5)
+    $themeKey = $ThemeOrder[$bucket % $ThemeOrder.Count]
+} elseif (-not $Themes.ContainsKey($themeKey)) {
+    $themeKey = 'deku'
+}
 $theme = $Themes[$themeKey]
 
 $C_QUIRK    = $theme.Quirk
@@ -277,23 +297,31 @@ if ($HERO_NAME) { $quirkPart += " $BOLD$C_QUIRK$HERO_NAME$RESET" }
 # Agency (current dir)
 $agencyPart = "$C_AGENCY$dirName$RESET"
 
-# Rank (hero level from gain-xp.ps1's Stop hook — grows one tick per finished
-# turn). Missing/unreadable state file just means "not trained yet": Lv1, empty bar.
-$rankStateFile = Join-Path $PSScriptRoot 'mha-statusline-state.json'
-$rankState = $null
-if (Test-Path $rankStateFile) {
-    try { $rankState = Get-Content -Raw $rankStateFile | ConvertFrom-Json } catch { $rankState = $null }
+# Rank (hero level) is driven live by this week's usage — the same
+# rate_limits.seven_day.used_percentage Claude Code already reports (see
+# Cooldown below). No accumulated state file, no Stop hook: the harder you're
+# leaning on Claude this week, the higher your level climbs, and it eases
+# back down as that window rolls over. 0-100% maps onto Lv1-40, the full
+# range Get-RankAbbrev knows how to label. Missing week data (older CLI or a
+# plan without rate limits) just means "no signal yet": Lv1, empty bar.
+function Get-LevelFromWeekPct($weekPct) {
+    if ($null -eq $weekPct) { return @{ Level = 1; Progress = 0.0 } }
+    $exact = [math]::Max(0.0, [math]::Min(100.0, [double]$weekPct)) * 0.39
+    $level = [math]::Min(40, 1 + [math]::Floor($exact))
+    $progress = $exact - [math]::Floor($exact)
+    if ($level -ge 40) { $progress = 1.0 }   # maxed out — show a full bar, not a stalled one
+    return @{ Level = [int]$level; Progress = $progress }
 }
-$rankLevel = if ($rankState -and $rankState.level) { [int]$rankState.level } else { 1 }
-$rankXp    = if ($rankState -and $null -ne $rankState.xp) { [int]$rankState.xp } else { 0 }
-$rankXpToNext = Get-XpToNext $rankLevel
+
+$rankInfo = Get-LevelFromWeekPct $week
+$rankLevel = $rankInfo.Level
 $rankAbbrev = Get-RankAbbrev $rankLevel
 
 $barSegments = 5
-$rankFilled = [math]::Min($barSegments, [math]::Floor(($rankXp / [double]$rankXpToNext) * $barSegments))
+$rankFilled = [math]::Min($barSegments, [math]::Floor($rankInfo.Progress * $barSegments))
 $rankBar = ('▰' * $rankFilled) + ('▱' * ($barSegments - $rankFilled))
 
-$rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar $rankXp/$rankXpToNext$RESET"
+$rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar$RESET"
 
 # Cooldown (5h/7d rate limits) — the only remaining optional segment
 $cooldownPart = $null

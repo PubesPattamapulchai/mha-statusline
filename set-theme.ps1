@@ -7,6 +7,7 @@
 #   powershell -NoProfile -ExecutionPolicy Bypass -File set-theme.ps1 -Theme bakugo
 param(
     [ValidateSet(
+        'auto',
         'deku', 'uraraka', 'bakugo', 'todoroki', 'allmight',
         'iida', 'momo', 'kirishima', 'kaminari', 'jiro', 'tokoyami', 'ashido',
         'asui', 'shoji', 'sato', 'sero', 'aoyama', 'ojiro', 'hagakure', 'koda',
@@ -17,7 +18,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $themes = [ordered]@{
-    'deku'      = 'Deku (Izuku Midoriya) — One For All green, hero-red accents [default]'
+    'auto'      = 'Auto-rotate — cycles through all 22 themes, a new one every 5 minutes [default]'
+    'deku'      = 'Deku (Izuku Midoriya) — One For All green, hero-red accents'
     'uraraka'   = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
     'bakugo'    = 'Bakugo (Katsuki) — explosion orange, olive accents'
     'todoroki'  = 'Todoroki (Shoto) — half ice-blue, half fire-red'
@@ -49,16 +51,16 @@ if (-not $Theme) {
         Write-Host ("  [{0}] {1} — {2}" -f ($i + 1), $keys[$i], $themes[$keys[$i]])
     }
     Write-Host ""
-    $choice = Read-Host "Enter a number (1-$($keys.Count)), or a theme name [default: deku]"
+    $choice = Read-Host "Enter a number (1-$($keys.Count)), or a theme name [default: auto]"
     if (-not $choice) {
-        $Theme = 'deku'
+        $Theme = 'auto'
     } elseif ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -le $keys.Count) {
         $Theme = $keys[[int]$choice - 1]
     } elseif ($themes.Contains($choice.Trim().ToLowerInvariant())) {
         $Theme = $choice.Trim().ToLowerInvariant()
     } else {
-        Write-Host "Didn't recognize '$choice' — defaulting to deku." -ForegroundColor Yellow
-        $Theme = 'deku'
+        Write-Host "Didn't recognize '$choice' — defaulting to auto." -ForegroundColor Yellow
+        $Theme = 'auto'
     }
 }
 

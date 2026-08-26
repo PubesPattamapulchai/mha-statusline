@@ -22,7 +22,8 @@ if ($settings.PSObject.Properties.Name -contains 'statusLine') {
     Write-Host "No statusLine entry found — nothing to do." -ForegroundColor Yellow
 }
 
-# Remove only mha-statusline's own Stop hook entry (gain-xp.ps1) — leave any other
+# Remove only mha-statusline's own Stop hook entry (gain-xp.ps1, a legacy XP
+# accumulator from before Rank became weekly-usage-based) — leave any other
 # hooks in place, since other tools/plugins may share the Stop event.
 if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Stop') {
     $gainXpDest = Join-Path $HOME '.claude\gain-xp.ps1'
@@ -42,4 +43,4 @@ if ($changed) {
 }
 
 Write-Host "Restart Claude Code to see the change." -ForegroundColor Yellow
-Write-Host "statusline.ps1, gain-xp.ps1, set-theme.ps1, commands\mha-theme.md, and any saved theme/rank state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow
+Write-Host "statusline.ps1, set-theme.ps1, commands\mha-theme.md, and any saved theme (mha-theme.txt) are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow

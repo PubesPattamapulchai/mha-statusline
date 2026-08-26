@@ -15,7 +15,7 @@ One line, kept minimal:
 |---|---|---|
 | 💥 Quirk | Model name + the character's hero name (icon/name vary by [theme](#themes) — ✊ Deku for Deku, shown above) | `model.display_name` |
 | Agency | Current folder name | `workspace.current_dir` |
-| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `~/.claude/mha-statusline-state.json` |
+| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `rate_limits.seven_day.used_percentage` |
 | ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
 | Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero | static |
 
@@ -32,9 +32,10 @@ want to add a field back in [Customizing](#customizing).
 ## Rank: hero career progression
 
 A small companion feature inspired by [Claudemon](https://github.com/zamarrowski/claudemon):
-your own hero career levels up as you use Claude Code, shown as
-`<stage> · Lv<N>  <XP bar>  xp/next`. Unlike Claudemon there's no
-catching/battling — it's just you, climbing the ranks:
+your own hero career rises and falls with how hard you're using Claude Code
+*this week*, shown as `<stage> · Lv<N>  <bar>`. Unlike Claudemon there's no
+catching/battling, and unlike a typical XP grind there's nothing to
+accumulate forever — it's a live gauge, not a savings account:
 
 | Level | Shown as |
 |---|---|
@@ -46,13 +47,13 @@ catching/battling — it's just you, climbing the ranks:
 | 30-39 | `Agency Founder` |
 | 40+ | `#300`…`#1` — the JP Hero Billboard Chart, a numeric rank that counts down as you level, reaching **#1** (Symbol of Peace) around level 99 |
 
-XP is granted by a `Stop` hook (`gain-xp.ps1`) that fires once per finished
-Claude Code turn and adds a small random amount to
-`~/.claude/mha-statusline-state.json`. It's lock-protected so running several
-agents/sessions in parallel doesn't lose XP to a race. `install.ps1` wires the
-hook into `settings.json` automatically; if you run several Claude Code
-installs that share the same `~/.claude`, XP accrues across all of them —
-it's one shared hero career, not per-project.
+Level is computed straight from `rate_limits.seven_day.used_percentage` — the
+same weekly rate-limit usage Claude Code already reports and that also
+drives the `7d:` figure in Cooldown — mapped so 0% is Lv1 and 100% is Lv40.
+No state file, no hook, no accumulation: it's recalculated fresh on every
+statusline render, so it tracks your *current* 7-day window and eases back
+down as that window rolls over. Missing rate-limit data (older CLI, or a
+plan without them) just shows Lv1 with an empty bar.
 
 ## Themes
 
@@ -86,14 +87,22 @@ Might — each with its own Quirk icon, color palette, and hero name:
 | `mineta` | Mineta (Minoru) | Pop-off purple | Grape Juice |
 | `aizawa` | Aizawa-sensei (Shota) | Tired gray, capture-scarf | Eraser Head |
 
-`install.ps1` asks you to pick one on first install. To switch later, the
-easiest way is right from the Claude Code chat:
+There's also a 23rd option, **`auto`** — the default. Instead of pinning one
+character, it cycles through all 22 themes automatically, switching to the
+next one every 5 minutes. This is computed live from wall-clock time inside
+`statusline.ps1` itself (a 5-minute UTC bucket picks the index), so there's
+no background process, scheduled task, or timer to manage — it just changes
+the next time the statusline re-renders after the bucket rolls over.
+
+`install.ps1` asks you to pick one on first install (default `auto`). To
+switch later, the easiest way is right from the Claude Code chat:
 
 ```
 /mha-theme
 ```
 
-Answer the picker it shows, or skip straight to one: `/mha-theme bakugo`.
+Answer the picker it shows, or skip straight to one: `/mha-theme bakugo`, or
+`/mha-theme auto` to go back to rotating.
 
 Or from a terminal, without opening Claude Code:
 
@@ -103,11 +112,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "$HOME\.claude\set-theme.ps1
 
 Pass `-Theme` to skip its menu too: `... set-theme.ps1 -Theme bakugo`.
 
-Either way this writes the theme key to `~/.claude/mha-theme.txt`, which
-`statusline.ps1` reads on every invocation — no reinstall or `settings.json`
-change needed (just a new Claude Code session, since the statusline is a
-separate process that only re-reads the file on its next run). For a one-off
-override (e.g. testing a theme in a single shell) set
+Either way this writes the theme key (or `auto`) to `~/.claude/mha-theme.txt`,
+which `statusline.ps1` reads on every invocation — no reinstall or
+`settings.json` change needed (just a new Claude Code session, since the
+statusline is a separate process that only re-reads the file on its next
+run). For a one-off override (e.g. testing a theme in a single shell) set
 `$env:MHA_STATUSLINE_THEME` before launching Claude Code; it takes priority
 over the saved file.
 
@@ -119,12 +128,13 @@ Clone or download this repo, then run:
 powershell -NoProfile -ExecutionPolicy Bypass -File install.ps1
 ```
 
-This copies `statusline.ps1`, `set-theme.ps1`, and `gain-xp.ps1` to `~/.claude/`,
-plus the `/mha-theme` command to `~/.claude/commands/`. It points
-`~/.claude/settings.json`'s `statusLine` at the first, wires `gain-xp.ps1`
-into a `Stop` hook (merged with any hooks you already have — nothing is
-clobbered), and asks you to pick a [theme](#themes) on first install. Restart
-Claude Code afterwards.
+This copies `statusline.ps1` and `set-theme.ps1` to `~/.claude/`, plus the
+`/mha-theme` command to `~/.claude/commands/`. It points
+`~/.claude/settings.json`'s `statusLine` at the first, asks you to pick a
+[theme](#themes) on first install (default `auto`), and cleans up a legacy
+`gain-xp.ps1` `Stop` hook from older versions of this project if it finds
+one (Rank no longer needs a hook — see [Rank](#rank-hero-career-progression)).
+Restart Claude Code afterwards.
 
 `-ExecutionPolicy Bypass` only affects that one process — it does not change any
 system-wide policy and does not require administrator rights, so it works even on
@@ -150,10 +160,11 @@ If you'd rather do it by hand:
 powershell -NoProfile -ExecutionPolicy Bypass -File uninstall.ps1
 ```
 
-Removes the `statusLine` entry and the `gain-xp.ps1` `Stop` hook from
-`settings.json` (any other hooks you have are left untouched). The scripts
-themselves and any saved theme/rank state are left on disk — delete them
-manually from `~/.claude/` if you want it fully gone.
+Removes the `statusLine` entry from `settings.json`, and cleans up the legacy
+`gain-xp.ps1` `Stop` hook if an older install left one (any other hooks you
+have are left untouched). The scripts themselves and any saved theme
+(`mha-theme.txt`) are left on disk — delete them manually from `~/.claude/`
+if you want it fully gone.
 
 ## Requirements
 

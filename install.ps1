@@ -15,10 +15,6 @@ Copy-Item -Path $src -Destination $dest -Force
 # Also deploy set-theme.ps1 so switching themes later doesn't require the repo checkout.
 Copy-Item -Path (Join-Path $PSScriptRoot 'set-theme.ps1') -Destination (Join-Path $claudeDir 'set-theme.ps1') -Force
 
-# And gain-xp.ps1, the Stop hook that grows the Rank segment's hero career.
-$gainXpDest = Join-Path $claudeDir 'gain-xp.ps1'
-Copy-Item -Path (Join-Path $PSScriptRoot 'gain-xp.ps1') -Destination $gainXpDest -Force
-
 # And the /mha-theme slash command, so switching themes is just a chat command
 # instead of a separate terminal invocation.
 $commandsDir = Join-Path $claudeDir 'commands'
@@ -50,29 +46,24 @@ if ($settings.PSObject.Properties.Name -contains 'statusLine') {
     $settings | Add-Member -MemberType NoteProperty -Name 'statusLine' -Value $statusLine
 }
 
-# Wire gain-xp.ps1 into the Stop hook (fires once per finished assistant turn) so
-# the Rank segment's XP/level actually grows. Merge into any existing hooks —
-# never clobber hooks other tools/plugins have already configured.
-if ($settings.PSObject.Properties.Name -notcontains 'hooks') {
-    $settings | Add-Member -MemberType NoteProperty -Name 'hooks' -Value ([PSCustomObject]@{})
-}
-if ($settings.hooks.PSObject.Properties.Name -notcontains 'Stop') {
-    $settings.hooks | Add-Member -MemberType NoteProperty -Name 'Stop' -Value @()
-}
-
-$gainXpCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$gainXpDest`""
-$alreadyWired = $false
-foreach ($entry in @($settings.hooks.Stop)) {
-    foreach ($h in @($entry.hooks)) {
-        if ($h.command -eq $gainXpCommand) { $alreadyWired = $true }
+# Legacy cleanup: older installs wired a gain-xp.ps1 Stop hook to accumulate
+# XP for the Rank segment. Rank is now computed live from weekly usage
+# (rate_limits.seven_day.used_percentage) instead, so that hook and its state
+# file are dead weight — remove them if an earlier install left them behind.
+# Never touches hooks other tools/plugins have configured on Stop.
+$legacyGainXpDest = Join-Path $claudeDir 'gain-xp.ps1'
+$legacyStateFile = Join-Path $claudeDir 'mha-statusline-state.json'
+if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Stop') {
+    $legacyGainXpCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$legacyGainXpDest`""
+    $kept = @(@($settings.hooks.Stop) | Where-Object {
+        -not (@($_.hooks) | Where-Object { $_.command -eq $legacyGainXpCommand })
+    })
+    if ($kept.Count -lt @($settings.hooks.Stop).Count) {
+        $settings.hooks.Stop = $kept
+        Write-Host "Removed legacy gain-xp.ps1 Stop hook (Rank is now weekly-usage-based)." -ForegroundColor Yellow
     }
 }
-if (-not $alreadyWired) {
-    $stopEntry = [PSCustomObject]@{
-        hooks = @([PSCustomObject]@{ type = 'command'; command = $gainXpCommand; timeout = 5 })
-    }
-    $settings.hooks.Stop = @(@($settings.hooks.Stop) + $stopEntry)
-}
+Remove-Item -Path $legacyGainXpDest, $legacyStateFile -Force -ErrorAction SilentlyContinue
 
 $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 
@@ -80,4 +71,5 @@ Write-Host "Installed to $dest" -ForegroundColor Green
 Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
 Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
 Write-Host "Change theme anytime: type /mha-theme in Claude Code, or run powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
+Write-Host "Default theme is 'auto' -- it cycles the whole roster every 5 minutes. Pin one with /mha-theme <name> any time." -ForegroundColor Yellow
 Write-Host "Go beyond, Plus Ultra! 💪" -ForegroundColor Magenta
