@@ -11,19 +11,19 @@ param(
         'deku', 'uraraka', 'bakugo', 'todoroki', 'allmight',
         'iida', 'momo', 'kirishima', 'kaminari', 'jiro', 'tokoyami', 'ashido',
         'asui', 'shoji', 'sato', 'sero', 'aoyama', 'ojiro', 'hagakure', 'koda',
-        'mineta', 'aizawa'
+        'mineta', 'aizawa', 'shinzo'
     )]
     [string]$Theme
 )
 $ErrorActionPreference = 'Stop'
 
 $themes = [ordered]@{
-    'auto'      = 'Auto-rotate — cycles through all 22 themes, a new one every 5 minutes [default]'
-    'deku'      = 'Deku (Izuku Midoriya) — One For All green, hero-red accents'
+    'auto'      = 'Auto-rotate — cycles through all 23 themes, a new one every 5 minutes [default]'
+    'deku'      = 'Deku (Midoriya Izuku) — One For All green, hero-red accents'
     'uraraka'   = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
     'bakugo'    = 'Bakugo (Katsuki) — explosion orange, olive accents'
     'todoroki'  = 'Todoroki (Shoto) — half ice-blue, half fire-red'
-    'allmight'  = 'All Might — hero-suit blue and gold'
+    'allmight'  = 'All Might (Yaki Toshinori) — hero-suit blue and gold'
     'iida'      = 'Iida (Tenya) — Engine blue, recipro-burst red'
     'momo'      = 'Yaoyorozu (Momo) — Creation crimson, gold trim'
     'kirishima' = 'Kirishima (Eijiro) — hardened red, manly orange'
@@ -41,6 +41,7 @@ $themes = [ordered]@{
     'koda'      = 'Koda (Koji) — quiet forest green'
     'mineta'    = 'Mineta (Minoru) — pop-off purple'
     'aizawa'    = 'Aizawa-sensei (Shota) — homeroom teacher, tired gray'
+    'shinzo'    = 'Shinzo (Hitoshi) — Brainwash violet, capture-scarf indigo'
 }
 
 if (-not $Theme) {

@@ -57,18 +57,19 @@ plan without them) just shows Lv1 with an empty bar.
 
 ## Themes
 
-22 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, and All
-Might — each with its own Quirk icon, color palette, and hero name:
+23 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, All
+Might, and Shinzo (Hitoshi) — each with its own Quirk icon, color palette,
+and hero name:
 
 <p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme, one per Class 1-A student plus Aizawa-sensei and All Might" width="640"></p>
 
 | Theme key | Character | Colors | Hero name |
 |---|---|---|---|
-| `deku` *(default)* | Deku (Izuku Midoriya) | One For All green | Deku |
+| `deku` *(default)* | Deku (Midoriya Izuku) | One For All green | Deku |
 | `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents | Dynamight |
 | `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown | Uravity |
 | `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | Shoto |
-| `allmight` | All Might | Hero-suit blue and gold | All Might |
+| `allmight` | All Might (Yaki Toshinori) | Hero-suit blue and gold | All Might |
 | `iida` | Iida (Tenya) | Engine blue, recipro-burst red | Ingenium |
 | `momo` | Yaoyorozu (Momo) | Creation crimson, cream belt | Creati |
 | `kirishima` | Kirishima (Eijiro) | Hardened red, manly orange | Red Riot |
@@ -86,13 +87,15 @@ Might — each with its own Quirk icon, color palette, and hero name:
 | `koda` | Koda (Koji) | Quiet forest green | Anima |
 | `mineta` | Mineta (Minoru) | Pop-off purple | Grape Juice |
 | `aizawa` | Aizawa-sensei (Shota) | Tired gray, capture-scarf | Eraser Head |
+| `shinzo` | Shinzo (Hitoshi) | Brainwash violet, capture-scarf indigo | NightHide |
 
-There's also a 23rd option, **`auto`** — the default. Instead of pinning one
-character, it cycles through all 22 themes automatically, switching to the
-next one every 5 minutes. This is computed live from wall-clock time inside
-`statusline.ps1` itself (a 5-minute UTC bucket picks the index), so there's
-no background process, scheduled task, or timer to manage — it just changes
-the next time the statusline re-renders after the bucket rolls over.
+There's also a 24th option, **`auto`** — the default. Instead of pinning one
+character, it cycles through all 23 themes automatically, switching to the
+next one every 5 minutes, in A-Z order by character name. This is computed
+live from wall-clock time inside `statusline.ps1` itself (a 5-minute UTC
+bucket picks the index), so there's no background process, scheduled task,
+or timer to manage — it just changes the next time the statusline
+re-renders after the bucket rolls over.
 
 `install.ps1` asks you to pick one on first install (default `auto`). To
 switch later, the easiest way is right from the Claude Code chat:

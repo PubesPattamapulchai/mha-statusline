@@ -1,24 +1,24 @@
 ---
 description: Switch the My Hero Academia statusline theme (all of Class 1-A, plus Aizawa-sensei and All Might), or turn on auto-rotation
-argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa]
+argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa|shinzo]
 allowed-tools: Bash, PowerShell, AskUserQuestion
 ---
 
-Switch the mha-statusline theme for this user. There are 22 character themes
-plus a 23rd special option, `auto`, with a one-line flavor description each
+Switch the mha-statusline theme for this user. There are 23 character themes
+plus a 24th special option, `auto`, with a one-line flavor description each
 (for when you need to present them):
 
 **Auto-rotation**
-- **auto** — cycles through all 22 themes automatically, a new one every 5
-  minutes, computed live from wall-clock time (no background task needed).
-  Default on a fresh install.
+- **auto** — cycles through all 23 themes automatically, a new one every 5
+  minutes, sorted A-Z by character name, computed live from wall-clock time
+  (no background task needed). Default on a fresh install.
 
 **The core four + All Might**
-- **deku** — Deku (Izuku Midoriya): One For All green, hero-red accents.
+- **deku** — Deku (Midoriya Izuku): One For All green, hero-red accents.
 - **bakugo** — Bakugo (Katsuki): explosion orange, olive accents.
 - **uraraka** — Uraraka (Ochako): zero-gravity pink, sky-blue cooldown.
 - **todoroki** — Todoroki (Shoto): half ice-blue, half fire-red.
-- **allmight** — All Might: hero-suit blue and gold.
+- **allmight** — All Might (Yaki Toshinori): hero-suit blue and gold.
 
 **Rest of Class 1-A**
 - **iida** — Iida (Tenya): engine blue, recipro-burst red.
@@ -41,7 +41,11 @@ plus a 23rd special option, `auto`, with a one-line flavor description each
 **Homeroom teacher**
 - **aizawa** — Aizawa-sensei (Shota): tired gray, capture-scarf.
 
-If `$ARGUMENTS` names `auto` or one of the 22 character keys
+**Also available**
+- **shinzo** — Shinzo (Hitoshi): Brainwash violet, capture-scarf indigo.
+  Hero name NightHide.
+
+If `$ARGUMENTS` names `auto` or one of the 23 character keys
 (case-insensitive; also accept a close match on the character's first or
 last name, e.g. "tsuyu" or "eraserhead" → `asui`/`aizawa`; also accept
 "rotate"/"cycle"/"random" as synonyms for `auto`), just run it directly, no
@@ -55,8 +59,8 @@ If `$ARGUMENTS` is empty (or doesn't match a key), use the AskUserQuestion
 tool: offer `auto` plus the three most-requested character themes (bakugo,
 uraraka, todoroki) as the quick-pick options — mention in the question text
 that `auto` cycles the whole roster automatically every 5 minutes and is the
-default, and that any other Class 1-A student, All Might, or Aizawa-sensei
-can be typed via "Other" — that's faster than the script's own terminal menu
+default, and that any other Class 1-A student, All Might, Aizawa-sensei, or
+Shinzo can be typed via "Other" — that's faster than the script's own terminal menu
 since it's inline in the chat, and the full option list doesn't fit a single
 picker. If they type a name via "Other", match it against the list above the
 same way as `$ARGUMENTS` (key, first name, or last name). Then run the same

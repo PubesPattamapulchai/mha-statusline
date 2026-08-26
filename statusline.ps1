@@ -57,7 +57,7 @@ $DIM   = Ansi256 244   # neutral gray for separators — content carries the the
 # character's hero name. Only the character-specific bits change.
 $Themes = @{
     'deku' = @{
-        Label     = 'Deku (Izuku Midoriya)'
+        Label     = 'Deku (Midoriya Izuku)'
         QuirkIcon = '✊'
         Quirk     = Ansi256 46    # One For All green
         Agency    = Ansi 97
@@ -89,7 +89,7 @@ $Themes = @{
         Hero      = 'Shoto'
     }
     'allmight' = @{
-        Label     = 'All Might'
+        Label     = 'All Might (Yaki Toshinori)'
         QuirkIcon = '💪'
         Quirk     = Ansi256 33    # hero-suit blue
         Agency    = Ansi 97
@@ -234,16 +234,26 @@ $Themes = @{
         Cooldown  = Ansi256 60
         Hero      = 'Eraser Head'
     }
+    'shinzo' = @{
+        Label     = 'Shinzo (Hitoshi)'
+        QuirkIcon = '🧠'
+        Quirk     = Ansi256 93    # Brainwash — deep violet
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 60    # muted indigo — underground, night-hidden
+        Hero      = 'NightHide'
+    }
 }
 
-# Rotation order for auto theme-cycling (see below) — same order as
-# set-theme.ps1's menu. Plain @{} hashtables in PowerShell don't preserve
-# insertion order, so this array is the one place that does.
+# Rotation order for auto theme-cycling (see below) — students sorted A-Z by
+# character name (Aoyama first, Yaoyorozu/Momo last), with the two teachers
+# Aizawa-sensei and All Might held back to the final two slots. Not
+# set-theme.ps1's menu order. Plain @{} hashtables in PowerShell don't
+# preserve insertion order, so this array is the one place that does.
 $ThemeOrder = @(
-    'deku', 'uraraka', 'bakugo', 'todoroki', 'allmight',
-    'iida', 'momo', 'kirishima', 'kaminari', 'jiro', 'tokoyami', 'ashido',
-    'asui', 'shoji', 'sato', 'sero', 'aoyama', 'ojiro', 'hagakure', 'koda',
-    'mineta', 'aizawa'
+    'aoyama', 'ashido', 'asui', 'bakugo', 'deku', 'hagakure', 'iida', 'jiro',
+    'kaminari', 'kirishima', 'koda', 'mineta', 'ojiro', 'sato', 'sero',
+    'shinzo', 'shoji', 'todoroki', 'tokoyami', 'uraraka', 'momo',
+    'aizawa', 'allmight'
 )
 
 # Pick a theme: $env:MHA_STATUSLINE_THEME overrides the saved config, which
