@@ -17,7 +17,7 @@ One line, kept minimal:
 | Agency | Current folder name | `workspace.current_dir` |
 | Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `rate_limits.seven_day.used_percentage` |
 | ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
-| Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero | static |
+| Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero. League of Villains themes swap it for "Go beyond, Plus Chaos! 😈" instead | static |
 
 The git branch was dropped from the line entirely (not just hidden) to keep
 things minimal — see [Customizing](#customizing) if you want it back.
@@ -57,11 +57,16 @@ plan without them) just shows Lv1 with an empty bar.
 
 ## Themes
 
-23 themes — every Class 1-A student, homeroom teacher Aizawa-sensei, All
-Might, and Shinzo (Hitoshi) — each with its own Quirk icon, color palette,
-and hero name:
+103 themes — all of Class 1-A, all 20 of Class 1-B, U.A.'s "Big 3", every
+past holder of One For All, 18 U.A. faculty and named sidekick/mentor
+heroes, 13 pro heroes, and 21 villains spanning the League of Villains, the
+Meta Liberation Army, and independent masterminds who carried their own
+arc — each with its own Quirk icon, color palette, and hero (or villain)
+name:
 
-<p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme, one per Class 1-A student plus Aizawa-sensei and All Might" width="640"></p>
+<p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme — a sample across Class 1-A, Class 1-B, the Big 3, U.A. faculty, pro heroes, and the League of Villains" width="640"></p>
+
+### Class 1-A
 
 | Theme key | Character | Colors | Hero name |
 |---|---|---|---|
@@ -69,7 +74,6 @@ and hero name:
 | `bakugo` | Bakugo (Katsuki) | Explosion orange, olive accents | Dynamight |
 | `uraraka` | Uraraka (Ochako) | Zero-gravity pink, sky-blue cooldown | Uravity |
 | `todoroki` | Todoroki (Shoto) | Half ice-blue, half fire-red | Shoto |
-| `allmight` | All Might (Yaki Toshinori) | Hero-suit blue and gold | All Might |
 | `iida` | Iida (Tenya) | Engine blue, recipro-burst red | Ingenium |
 | `momo` | Yaoyorozu (Momo) | Creation crimson, cream belt | Creati |
 | `kirishima` | Kirishima (Eijiro) | Hardened red, manly orange | Red Riot |
@@ -86,16 +90,144 @@ and hero name:
 | `hagakure` | Hagakure (Toru) | Barely-there white | Invisible Girl |
 | `koda` | Koda (Koji) | Quiet forest green | Anima |
 | `mineta` | Mineta (Minoru) | Pop-off purple | Grape Juice |
-| `aizawa` | Aizawa-sensei (Shota) | Tired gray, capture-scarf | Eraser Head |
 | `shinzo` | Shinzo (Hitoshi) | Brainwash violet, capture-scarf indigo | NightHide |
 
-There's also a 24th option, **`auto`** — the default. Instead of pinning one
-character, it cycles through all 23 themes automatically, switching to the
-next one every 5 minutes, in A-Z order by character name. This is computed
-live from wall-clock time inside `statusline.ps1` itself (a 5-minute UTC
-bucket picks the index), so there's no background process, scheduled task,
-or timer to manage — it just changes the next time the statusline
-re-renders after the bucket rolls over.
+### Class 1-B
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `monoma` | Monoma (Neito) | Copy mirror-cyan | Phantom Thief |
+| `kendo` | Kendo (Itsuka) | Big Fist tan | Battle Fist |
+| `tetsutetsu` | Tetsutetsu Tetsutetsu | Steel chrome-gray | Real Steel |
+| `tokage` | Tokage (Setsuna) | Lizard Tail Splitter green | Lizardy |
+| `shiozaki` | Shiozaki (Ibara) | Vines deep green | Vine |
+| `kuroiro` | Kuroiro (Shihai) | Black near-black | Vantablack |
+| `kamakiri` | Kamakiri (Togaru) | Razor Sharp mantis green | Jack Mantis |
+| `komori` | Komori (Kinoko) | Mushroom pink | Shemage |
+| `awase` | Awase (Yosetsu) | Weld spark orange | Welder |
+| `bondo` | Bondo (Kojiro) | Cemedine glue tan | Plamo |
+| `fukidashi` | Fukidashi (Manga) | Comic speech-bubble yellow | Comicman |
+| `honenuki` | Honenuki (Juzo) | Softening mud brown | Mudman |
+| `kaibara` | Kaibara (Sen) | Gyrate drill orange | Spiral |
+| `kodai` | Kodai (Yui) | Size soft blue | Rule |
+| `rin` | Rin (Hiryu) | Scales dragon blue | Dragon Shroud |
+| `shishida` | Shishida (Jurota) | Beast feral brown | Gevaudan |
+| `shoda` | Shoda (Nirengeki) | Twin Impact blast orange-red | Mines |
+| `tsuburaba` | Tsuburaba (Kosei) | Solid Air pale blue | Tsuburaba |
+| `tsunotori` | Tsunotori (Pony) | Horn Cannon pastel pink | Rocketti |
+| `yanagi` | Yanagi (Reiko) | Poltergeist psychic purple | Emily |
+
+### U.A.'s "Big 3"
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `mirio` | Togata (Mirio) | Permeation gold | Lemillion |
+| `tamaki` | Amajiki (Tamaki) | Manifest indigo | Suneater |
+| `nejire` | Hado (Nejire) | Wave Motion blue | Nejire-chan |
+
+### One For All lineage
+
+Every past holder of One For All before it reached Deku, each showing off
+their own original Quirk rather than One For All itself.
+
+| Theme key | Character | Colors | Quirk |
+|---|---|---|---|
+| `yoichi` | Shigaraki (Yoichi), 1st user | Soft gold | Quirk Bestowal |
+| `kudo` | Kudo (Toshitsugu), 2nd user | Mechanical blue-gray | Gearshift |
+| `brucelee` | Bruce Lee, 3rd user | Explosive orange | Fa Jin |
+| `shinomori` | Shinomori (Hikage), 4th user | Stealth purple | Danger Sense |
+| `banjo` | Banjo (Daigoro), 5th user | Black-purple | Blackwhip |
+| `en` | En, 6th user | Smoke purple | Smokescreen |
+| `nana` | Shimura (Nana), 7th user, All Might's mentor | Warm brown | Float |
+
+### U.A. faculty
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `allmight` | All Might (Yagi Toshinori) | Hero-suit blue and gold | All Might |
+| `aizawa` | Aizawa-sensei (Shota) | Tired gray, capture-scarf | Eraser Head |
+| `presentmic` | Present Mic (Yamada Hizashi) | Radio-DJ yellow | Present Mic |
+| `midnight` | Midnight (Kayama Nemuri) | Somnambulist purple | Midnight |
+| `vladking` | Vlad King (Kan Sekijiro) | Blood Control dark red | Vlad King |
+| `cementoss` | Cementoss (Ishiyama Ken) | Concrete gray | Cementoss |
+| `powerloader` | Power Loader (Maijima Higari) | Mining-suit orange | Power Loader |
+| `nezu` | Nezu | High Specs cream | Nezu |
+| `recoverygirl` | Recovery Girl (Shuzenji Chiyo) | Soft pink | Recovery Girl |
+| `thirteen` | Thirteen (Kurose Anan) | Black Hole void-black | Thirteen |
+| `ectoplasm` | Ectoplasm | Spectral teal | Ectoplasm |
+| `snipe` | Snipe | Cowboy brown | Snipe |
+| `hounddog` | Hound Dog (Inui Ryo) | Canine tan | Hound Dog |
+
+**Named sidekicks / mentor heroes** — supporting pros who mentor or work
+alongside Class 1-A, not top-ranked but each individually named on-page.
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `nighteye` | Sir Nighteye (Sasaki Mirai) | Dark green | Sir Nighteye |
+| `selkie` | Selkie | Gray-blue | Selkie |
+| `manual` | Manual (Mizushima Masaki) | Clear blue | Manual |
+| `uwabami` | Uwabami | Purple-gold | Uwabami |
+| `burnin` | Burnin (Kamiji Moe) | Orange-red | Burnin |
+
+### Pro heroes
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `endeavor` | Endeavor (Todoroki Enji) | Blazing red | Endeavor |
+| `hawks` | Hawks (Takami Keigo) | Red-gold | Hawks |
+| `mirko` | Mirko (Usagiyama Rumi) | White | Mirko |
+| `bestjeanist` | Best Jeanist (Hakamada Tsunagu) | Denim blue | Best Jeanist |
+| `edgeshot` | Edgeshot (Kamihara Shinya) | Dark navy | Edgeshot |
+| `grantorino` | Gran Torino (Torino Sorahiko) | Blue-gray | Gran Torino |
+| `mtlady` | Mt. Lady (Takeyama Yu) | Hero-suit yellow | Mt. Lady |
+| `kamuiwoods` | Kamui Woods (Nishiya Shinji) | Bark brown | Kamui Woods |
+| `fatgum` | Fat Gum (Toyomitsu Taishiro) | Hero-jacket yellow | Fat Gum |
+| `ryukyu` | Ryukyu (Tatsuma Ryuko) | Western-dragon blue | Ryukyu |
+| `gunhead` | Gunhead | Martial-arts tan | Gunhead |
+| `rocklock` | Rock Lock (Takagi Ken) | Gunmetal gray | Rock Lock |
+| `starandstripe` | Star and Stripe (Bate Cathleen) | Stars-and-stripes red/blue | Star and Stripe |
+
+### Villains
+
+Every villain theme renders Agency text in red instead of white, and the
+closing motto swaps to "Go beyond, Plus Chaos! 😈" instead of U.A.'s —
+whether they're League of Villains, Meta Liberation Army, the Vanguard
+Action Squad, or independent.
+
+| Theme key | Character | Colors | Name |
+|---|---|---|---|
+| `shigaraki` | Shigaraki (Shimura Tomura) | Ashen blue-gray | Shigaraki |
+| `dabi` | Dabi (Todoroki Touya) | Cold blue flame | Dabi |
+| `toga` | Toga (Himiko) | Blood pink | Toga |
+| `twice` | Twice (Bubaigawara Jin) | Bandage cyan | Twice |
+| `mrcompress` | Mr. Compress (Sako Atsuhiro) | Magician red | Mr. Compress |
+| `spinner` | Spinner (Iguchi Shuichi) | Scaly red | Spinner |
+| `overhaul` | Overhaul (Chisaki Kai) | Plague-mask gold | Overhaul |
+| `stain` | Stain (Akaguro Chizome) | Bandage red | Stain |
+| `allforone` | All For One | Imperial purple-black | All For One |
+| `muscular` | Muscular | Veiny pink-red | Muscular |
+| `geten` | Geten | Pale ice-blue | Geten |
+| `moonfish` | Moonfish | Cold steel-blue | Moonfish |
+| `mustard` | Mustard | Toxic mustard yellow | Mustard |
+| `rappa` | Rappa (Kendo Rappa) | Eight Bullets red | Rappa |
+| `redestro` | Re-Destro (Yotsubashi Rikiya) | MLA maroon | Re-Destro |
+| `skeptic` | Skeptic (Chikazoku Tomoyasu) | Screen-glow cyan | Skeptic |
+| `gentle` | Gentle Criminal (Tobita Danjuro) | Gentleman teal | Gentle Criminal |
+| `labrava` | La Brava (Aiba Manami) | Devoted pink | La Brava |
+| `ladynagant` | Lady Nagant (Tsutsumi Kaina) | Two-tone pink/dark-green | Lady Nagant |
+| `garaki` | Dr. Garaki (Ujiko Daruma) | Sickly lab green | Dr. Garaki |
+| `nine` | Nine | Storm gray-purple | Nine |
+
+There's also a 104th option, **`auto`** — the default. Instead of pinning one
+character, it cycles through all 103 themes automatically, switching to the
+next one every 5 minutes, grouped the way the tables above read (Class 1-A,
+Class 1-B, Big 3, One For All lineage, faculty, pro heroes, villains) and
+A-Z by character name within each group. This is computed live from
+wall-clock time inside `statusline.ps1` itself (a 5-minute UTC bucket picks
+the index), so there's no background process, scheduled task, or timer to
+manage — it just changes the next time the statusline re-renders after the
+bucket rolls over. A full lap of the roster takes about eight and a half
+hours.
 
 `install.ps1` asks you to pick one on first install (default `auto`). To
 switch later, the easiest way is right from the Claude Code chat:
