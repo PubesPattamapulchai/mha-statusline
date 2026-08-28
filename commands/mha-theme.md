@@ -1,15 +1,15 @@
 ---
 description: Switch the My Hero Academia statusline theme (Class 1-A, Class 1-B, the Big 3, the One For All lineage, U.A. faculty, pro heroes, and assorted villains), or turn on auto-rotation
-argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa|shinzo|monoma|kendo|tetsutetsu|tokage|shiozaki|kuroiro|kamakiri|komori|awase|bondo|fukidashi|honenuki|kaibara|kodai|rin|shishida|shoda|tsuburaba|tsunotori|yanagi|mirio|tamaki|nejire|yoichi|kudo|brucelee|shinomori|banjo|en|nana|presentmic|midnight|vladking|cementoss|powerloader|nezu|recoverygirl|thirteen|ectoplasm|snipe|hounddog|nighteye|selkie|manual|uwabami|burnin|endeavor|hawks|mirko|bestjeanist|edgeshot|grantorino|mtlady|kamuiwoods|fatgum|ryukyu|gunhead|rocklock|starandstripe|shigaraki|kurogiri|dabi|toga|twice|mrcompress|spinner|overhaul|stain|allforone|muscular|geten|moonfish|mustard|rappa|redestro|skeptic|gentle|labrava|ladynagant|garaki]
+argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa|shinzo|monoma|kendo|tetsutetsu|tokage|shiozaki|kuroiro|kamakiri|komori|awase|bondo|fukidashi|honenuki|kaibara|kodai|rin|shishida|shoda|tsuburaba|tsunotori|yanagi|mirio|tamaki|nejire|yoichi|kudo|brucelee|shinomori|banjo|en|nana|presentmic|midnight|vladking|cementoss|powerloader|nezu|recoverygirl|thirteen|ectoplasm|snipe|hounddog|nighteye|selkie|manual|mandalay|pixiebob|ragdoll|tiger|uwabami|burnin|endeavor|hawks|mirko|bestjeanist|edgeshot|grantorino|mtlady|kamuiwoods|fatgum|ryukyu|gunhead|rocklock|starandstripe|shigaraki|kurogiri|dabi|toga|twice|mrcompress|spinner|overhaul|stain|allforone|muscular|magne|geten|moonfish|mustard|rappa|redestro|skeptic|gentle|labrava|ladynagant|garaki]
 allowed-tools: Bash, PowerShell, AskUserQuestion
 ---
 
-Switch the mha-statusline theme for this user. There are 103 character
-themes plus a 104th special option, `auto`, with a one-line flavor
+Switch the mha-statusline theme for this user. There are 108 character
+themes plus a 109th special option, `auto`, with a one-line flavor
 description each (for when you need to present them):
 
 **Auto-rotation**
-- **auto** — cycles through all 103 themes automatically, a new one every 5
+- **auto** — cycles through all 108 themes automatically, a new one every 5
   minutes (a full lap takes about eight and a half hours), grouped Class
   1-A → Class 1-B → Big 3 → One For All lineage → faculty → pro heroes →
   villains, A-Z by character name within each group, computed live from
@@ -100,6 +100,10 @@ time, not top-ranked but individually named.
 - **nighteye** — Sir Nighteye (Sasaki Mirai): Foresight, dark green.
 - **selkie** — Selkie: Spotted Seal, gray-blue.
 - **manual** — Manual (Mizushima Masaki): Water, clear blue.
+- **mandalay** — Mandalay (Sosaki Shino): Telepath, leopard-print orange-brown.
+- **pixiebob** — Pixie-Bob (Tsuchikawa Ryuko): Earth Flow, earthen tan.
+- **ragdoll** — Ragdoll (Shiretoko Tomoko): Search, cheerful pink.
+- **tiger** — Tiger (Chatora Yawara): Pliabody, tiger-stripe burnt orange.
 - **uwabami** — Uwabami: Serpentress, purple-gold.
 - **burnin** — Burnin (Kamiji Moe): Burning Hair, orange-red.
 
@@ -133,6 +137,7 @@ and independent villains who carried their own arc.
 - **stain** — Stain (Akaguro Chizome): bandage red.
 - **allforone** — All For One (Shigaraki Zen): imperial purple-black.
 - **muscular** — Muscular (Imasuji Goto): veiny pink-red.
+- **magne** — Magne (Hikiishi Kenji): Magnetism, dark magenta-purple.
 - **geten** — Geten: pale ice-blue.
 - **moonfish** — Moonfish: cold steel-blue.
 - **mustard** — Mustard: toxic mustard yellow.
@@ -144,7 +149,7 @@ and independent villains who carried their own arc.
 - **ladynagant** — Lady Nagant (Tsutsumi Kaina): two-tone pink/dark-green.
 - **garaki** — Dr. Garaki (Ujiko Daruma): sickly lab green.
 
-If `$ARGUMENTS` names `auto` or one of the 103 character keys
+If `$ARGUMENTS` names `auto` or one of the 108 character keys
 (case-insensitive; also accept a close match on the character's first or
 last name, e.g. "tsuyu" or "eraserhead" → `asui`/`aizawa`; also accept
 "rotate"/"cycle"/"random" as synonyms for `auto`), just run it directly, no

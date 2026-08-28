@@ -20,12 +20,13 @@ param(
         'yoichi', 'kudo', 'brucelee', 'shinomori', 'banjo', 'en', 'nana',
         'presentmic', 'midnight', 'vladking', 'cementoss', 'powerloader',
         'nezu', 'recoverygirl', 'thirteen', 'ectoplasm', 'snipe',
-        'hounddog', 'nighteye', 'selkie', 'manual', 'uwabami', 'burnin',
+        'hounddog', 'nighteye', 'selkie', 'manual', 'mandalay', 'pixiebob',
+        'ragdoll', 'tiger', 'uwabami', 'burnin',
         'endeavor', 'hawks', 'mirko', 'bestjeanist', 'edgeshot',
         'grantorino', 'mtlady', 'kamuiwoods', 'fatgum', 'ryukyu',
         'gunhead', 'rocklock', 'starandstripe',
         'shigaraki', 'kurogiri', 'dabi', 'toga', 'twice', 'mrcompress', 'spinner',
-        'overhaul', 'stain', 'allforone', 'muscular',
+        'overhaul', 'stain', 'allforone', 'muscular', 'magne',
         'geten', 'moonfish', 'mustard', 'rappa', 'redestro', 'skeptic',
         'gentle', 'labrava', 'ladynagant', 'garaki'
     )]
@@ -34,7 +35,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $themes = [ordered]@{
-    'auto'      = 'Auto-rotate — cycles through all 103 themes, a new one every 5 minutes [default]'
+    'auto'      = 'Auto-rotate — cycles through all 108 themes, a new one every 5 minutes [default]'
     'deku'      = 'Deku (Midoriya Izuku) — One For All green, hero-red accents'
     'uraraka'   = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
     'bakugo'    = 'Bakugo (Katsuki) — explosion orange, olive accents'
@@ -102,6 +103,10 @@ $themes = [ordered]@{
     'nighteye'    = 'Sir Nighteye (Sasaki Mirai) — Foresight dark green'
     'selkie'      = 'Selkie — Spotted Seal gray-blue'
     'manual'      = 'Manual (Mizushima Masaki) — Water clear blue'
+    'mandalay'    = 'Mandalay (Sosaki Shino) — Telepath leopard-print orange-brown, Wild Wild Pussycats'
+    'pixiebob'    = 'Pixie-Bob (Tsuchikawa Ryuko) — Earth Flow earthen tan, Wild Wild Pussycats'
+    'ragdoll'     = 'Ragdoll (Shiretoko Tomoko) — Search cheerful pink, Wild Wild Pussycats'
+    'tiger'       = 'Tiger (Chatora Yawara) — Pliabody tiger-stripe burnt orange, Wild Wild Pussycats'
     'uwabami'     = 'Uwabami — Serpentress kimono purple-gold'
     'burnin'      = 'Burnin (Kamiji Moe) — Burning Hair orange-red'
     'endeavor'    = 'Endeavor (Todoroki Enji) — Hellflame blazing red'
@@ -128,6 +133,7 @@ $themes = [ordered]@{
     'stain'       = 'Stain (Akaguro Chizome) — Bloodcurdle bandage red, League of Villains'
     'allforone'   = 'All For One (Shigaraki Zen) — imperial purple-black, League of Villains'
     'muscular'    = 'Muscular (Imasuji Goto) — Muscle Augmentation veiny pink-red, League of Villains'
+    'magne'       = 'Magne (Hikiishi Kenji) — Magnetism dark magenta-purple, League of Villains'
     'geten'       = 'Geten — Ice Manipulation pale ice-blue, League of Villains'
     'moonfish'    = 'Moonfish — Blade-Tooth cold steel-blue, Vanguard Action Squad'
     'mustard'     = 'Mustard — Gas toxic mustard yellow, Vanguard Action Squad'
