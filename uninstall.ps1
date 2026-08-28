@@ -59,6 +59,19 @@ if ($profilePath -and (Test-Path $profilePath)) {
     }
 }
 
+# The "UA Hero Briefing" output style is an inert opt-in extra (see
+# install.ps1) — remove the file regardless, but only nudge about switching
+# away from it in settings.json if it was actually selected.
+$outputStylePath = Join-Path $HOME '.claude\output-styles\ua-hero.md'
+if (Test-Path $outputStylePath) {
+    Remove-Item -Path $outputStylePath -Force
+    Write-Host "Removed $outputStylePath" -ForegroundColor Green
+    if ($settings -and $settings.outputStyle -eq 'UA Hero Briefing') {
+        Write-Host "Note: outputStyle in settings.json was still set to 'UA Hero Briefing' - switch it via /config, since the file backing it is now gone." -ForegroundColor Yellow
+    }
+    $changed = $true
+}
+
 if ($changed) {
     Write-Host "Restart Claude Code, or open a new terminal session, to see the change." -ForegroundColor Yellow
 } else {

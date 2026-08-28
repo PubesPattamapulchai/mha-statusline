@@ -427,3 +427,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File C:\path\to\mha-statusline\un
 ```
 
 which also restores the backed-up hook, if there was one.
+
+## Bonus: "UA Hero Briefing" output style
+
+`install.ps1` also drops a custom
+[output style](https://code.claude.com/docs/en/output-styles) into
+`~/.claude/output-styles/ua-hero.md` — **not enabled by default**. It adds a
+light hero-briefing framing to the start of multi-step plans and the end of
+finished work (one short line each, at most once per response), while
+leaving Claude's actual coding behavior, technical explanations, and code
+comments completely untouched (`keep-coding-instructions: true`).
+
+Copying the file doesn't turn it on by itself. Enable it with:
+
+```
+/config
+```
+
+then pick **UA Hero Briefing** under Output style. Switch back to Default
+the same way, or via `outputStyle` in `settings.json`.

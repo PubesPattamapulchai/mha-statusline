@@ -37,6 +37,14 @@ if ($Target -eq 'ClaudeCode') {
     $commandsDir = Join-Path $claudeDir 'commands'
     New-Item -ItemType Directory -Force -Path $commandsDir | Out-Null
     Copy-Item -Path (Join-Path $PSScriptRoot 'commands\mha-theme.md') -Destination (Join-Path $commandsDir 'mha-theme.md') -Force
+
+    # "UA Hero Briefing" output style (optional bonus). Copying the file alone
+    # does not activate it - Claude Code only applies an output style once you
+    # select it via /config or set outputStyle in settings.json - so this is
+    # safe to always drop in; it does nothing until you opt in yourself.
+    $outputStylesDir = Join-Path $claudeDir 'output-styles'
+    New-Item -ItemType Directory -Force -Path $outputStylesDir | Out-Null
+    Copy-Item -Path (Join-Path $PSScriptRoot 'output-styles\ua-hero.md') -Destination (Join-Path $outputStylesDir 'ua-hero.md') -Force
 }
 
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
@@ -90,6 +98,7 @@ if ($Target -eq 'ClaudeCode') {
     Write-Host "Installed to $dest" -ForegroundColor Green
     Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
     Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
+    Write-Host "Optional: try the 'UA Hero Briefing' output style via /config (not enabled by default)." -ForegroundColor Yellow
 } else {
     # Shell target: hook the PowerShell prompt itself instead of any one
     # tool's config. CurrentUserAllHosts covers powershell.exe, pwsh, and the
