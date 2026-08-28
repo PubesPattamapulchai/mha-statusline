@@ -24,10 +24,10 @@ param(
         'endeavor', 'hawks', 'mirko', 'bestjeanist', 'edgeshot',
         'grantorino', 'mtlady', 'kamuiwoods', 'fatgum', 'ryukyu',
         'gunhead', 'rocklock', 'starandstripe',
-        'shigaraki', 'dabi', 'toga', 'twice', 'mrcompress', 'spinner',
+        'shigaraki', 'kurogiri', 'dabi', 'toga', 'twice', 'mrcompress', 'spinner',
         'overhaul', 'stain', 'allforone', 'muscular',
         'geten', 'moonfish', 'mustard', 'rappa', 'redestro', 'skeptic',
-        'gentle', 'labrava', 'ladynagant', 'garaki', 'nine'
+        'gentle', 'labrava', 'ladynagant', 'garaki'
     )]
     [string]$Theme
 )
@@ -118,6 +118,7 @@ $themes = [ordered]@{
     'rocklock'    = 'Rock Lock (Takagi Ken) — Lock Down gunmetal gray'
     'starandstripe' = 'Star and Stripe (Bate Cathleen) — New Order stars-and-stripes red/blue'
     'shigaraki'   = 'Shigaraki (Shimura Tomura) — Decay ashen blue-gray, League of Villains'
+    'kurogiri'    = 'Kurogiri (Shirakumo Oboro) — Warp Gate misty violet-black, League of Villains'
     'dabi'        = 'Dabi (Todoroki Touya) — Cremation cold blue flame, League of Villains'
     'toga'        = 'Toga (Himiko) — Transform blood pink, League of Villains'
     'twice'       = 'Twice (Bubaigawara Jin) — Double bandage cyan, League of Villains'
@@ -125,8 +126,8 @@ $themes = [ordered]@{
     'spinner'     = 'Spinner (Iguchi Shuichi) — Gecko scaly red, League of Villains'
     'overhaul'    = 'Overhaul (Chisaki Kai) — Overhaul plague-mask gold, League of Villains'
     'stain'       = 'Stain (Akaguro Chizome) — Bloodcurdle bandage red, League of Villains'
-    'allforone'   = 'All For One — imperial purple-black, League of Villains'
-    'muscular'    = 'Muscular — Muscle Augmentation veiny pink-red, League of Villains'
+    'allforone'   = 'All For One (Shigaraki Zen) — imperial purple-black, League of Villains'
+    'muscular'    = 'Muscular (Imasuji Goto) — Muscle Augmentation veiny pink-red, League of Villains'
     'geten'       = 'Geten — Ice Manipulation pale ice-blue, League of Villains'
     'moonfish'    = 'Moonfish — Blade-Tooth cold steel-blue, Vanguard Action Squad'
     'mustard'     = 'Mustard — Gas toxic mustard yellow, Vanguard Action Squad'
@@ -137,7 +138,6 @@ $themes = [ordered]@{
     'labrava'     = 'La Brava (Aiba Manami) — Love devoted pink'
     'ladynagant'  = 'Lady Nagant (Tsutsumi Kaina) — Rifle two-tone pink/dark-green'
     'garaki'      = 'Dr. Garaki (Ujiko Daruma) — Life Force sickly lab green'
-    'nine'        = 'Nine — Weather Manipulation storm gray-purple'
 }
 
 if (-not $Theme) {

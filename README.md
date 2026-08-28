@@ -3,11 +3,13 @@
 A [Claude Code](https://claude.com/claude-code) statusline themed after **My Hero
 Academia** — pure PowerShell, zero dependencies. No Node.js, no npm, no jq, no
 admin rights. Works on any locked-down Windows machine where PowerShell is the
-only thing you're guaranteed to have.
+only thing you're guaranteed to have. Not on Claude Code? It also installs as
+a plain terminal-prompt hook — see [Using it with Codex, other AI CLIs, or a
+local LLM](#using-it-with-codex-other-ai-clis-or-a-local-llm).
 
 One line, kept minimal:
 
-<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 Deku, dot, my-project, dot, Y2 dot Lv7 XP bar 84 of 140, dot, stopwatch 5h 18% 7d 63%, dot, Go beyond Plus Ultra" width="640"></p>
+<p align="center"><img src="assets/demo.svg" alt="mha-statusline sample output, Deku theme: fist Sonnet 5 Deku, dot, my-project, dot, Y2 dot Lv7, dot, stopwatch 5h 18%, dot, Go beyond Plus Ultra" width="640"></p>
 
 ## What it shows
 
@@ -15,8 +17,8 @@ One line, kept minimal:
 |---|---|---|
 | 💥 Quirk | Model name + the character's hero name (icon/name vary by [theme](#themes) — ✊ Deku for Deku, shown above) | `model.display_name` |
 | Agency | Current folder name | `workspace.current_dir` |
-| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below | `rate_limits.seven_day.used_percentage` |
-| ⏱ Cooldown | Rate limit usage (5h / 7d window) | `rate_limits.five_hour` / `.seven_day` |
+| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below. Skipped entirely on League of Villains themes | `rate_limits.seven_day.used_percentage` |
+| ⏱ Cooldown | Rate limit usage (5h window) | `rate_limits.five_hour` |
 | Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero. League of Villains themes swap it for "Go beyond, Plus Chaos! 😈" instead | static |
 
 The git branch was dropped from the line entirely (not just hidden) to keep
@@ -33,7 +35,7 @@ want to add a field back in [Customizing](#customizing).
 
 A small companion feature inspired by [Claudemon](https://github.com/zamarrowski/claudemon):
 your own hero career rises and falls with how hard you're using Claude Code
-*this week*, shown as `<stage> · Lv<N>  <bar>`. Unlike Claudemon there's no
+*this week*, shown as `<stage> · Lv<N>`. Unlike Claudemon there's no
 catching/battling, and unlike a typical XP grind there's nothing to
 accumulate forever — it's a live gauge, not a savings account:
 
@@ -45,24 +47,32 @@ accumulate forever — it's a live gauge, not a savings account:
 | 15-19 | `License` |
 | 20-29 | `Sidekick` |
 | 30-39 | `Agency Founder` |
-| 40+ | `#300`…`#1` — the JP Hero Billboard Chart, a numeric rank that counts down as you level, reaching **#1** (Symbol of Peace) around level 99 |
+| 40+ | `#300`…`#1` — the JP Hero Billboard Chart, a numeric rank that counts down as you level, reaching **#1** (Symbol of Peace) at level 100 |
 
 Level is computed straight from `rate_limits.seven_day.used_percentage` — the
-same weekly rate-limit usage Claude Code already reports and that also
-drives the `7d:` figure in Cooldown — mapped so 0% is Lv1 and 100% is Lv40.
-No state file, no hook, no accumulation: it's recalculated fresh on every
-statusline render, so it tracks your *current* 7-day window and eases back
-down as that window rolls over. Missing rate-limit data (older CLI, or a
-plan without them) just shows Lv1 with an empty bar.
+same weekly rate-limit usage Claude Code already reports — mapped so 0% is
+Lv1 and 100% is Lv100. The Lv40-100 countdown to `#1` isn't linear: it's a
+brisk, even climb from `#300` down to `#10` across Lv40-95, then a curve
+for the last ten ranks (Lv95-100) that gets progressively steeper the
+closer you get to `#1`, so the ranks that matter most stay distinguishable
+down to a fraction of a level instead of bunching up right before 100%. No
+state file, no hook, no accumulation: it's recalculated fresh on every
+statusline render — using the full decimal precision Claude Code reports,
+not a rounded whole number — so it tracks your *current* 7-day window and
+eases back down as that window rolls over. Missing rate-limit data (older
+CLI, or a plan without them) just shows Lv1. League of Villains themes
+skip this whole segment: a villain was never climbing U.A.'s ladder or the
+Hero Billboard Chart, so there's no rank of theirs for weekly usage to
+stand in for.
 
 ## Themes
 
-103 themes — all of Class 1-A, all 20 of Class 1-B, U.A.'s "Big 3", every
-past holder of One For All, 18 U.A. faculty and named sidekick/mentor
-heroes, 13 pro heroes, and 21 villains spanning the League of Villains, the
-Meta Liberation Army, and independent masterminds who carried their own
-arc — each with its own Quirk icon, color palette, and hero (or villain)
-name:
+108 themes — all of Class 1-A, all 20 of Class 1-B, U.A.'s "Big 3", every
+past holder of One For All, 22 U.A. faculty and named sidekick/mentor
+heroes (including the Wild, Wild Pussycats), 13 pro heroes, and 22 villains
+spanning the League of Villains, the Meta Liberation Army, and independent
+masterminds who carried their own arc — each with its own Quirk icon, color
+palette, and hero (or villain) name:
 
 <p align="center"><img src="assets/themes.svg" alt="Quirk icon and color per theme — a sample across Class 1-A, Class 1-B, the Big 3, U.A. faculty, pro heroes, and the League of Villains" width="640"></p>
 
@@ -169,6 +179,16 @@ alongside Class 1-A, not top-ranked but each individually named on-page.
 | `uwabami` | Uwabami | Purple-gold | Uwabami |
 | `burnin` | Burnin (Kamiji Moe) | Orange-red | Burnin |
 
+**Wild, Wild Pussycats** — the four-hero agency that runs Class 1-A's
+Forest Training Camp.
+
+| Theme key | Character | Colors | Hero name |
+|---|---|---|---|
+| `mandalay` | Sosaki (Shino) | Leopard-print orange-brown | Mandalay |
+| `pixiebob` | Tsuchikawa (Ryuko) | Earthen tan | Pixie-Bob |
+| `ragdoll` | Shiretoko (Tomoko) | Cheerful pink | Ragdoll |
+| `tiger` | Chatora (Yawara) | Tiger-stripe burnt orange | Tiger |
+
 ### Pro heroes
 
 | Theme key | Character | Colors | Hero name |
@@ -197,6 +217,7 @@ Action Squad, or independent.
 | Theme key | Character | Colors | Name |
 |---|---|---|---|
 | `shigaraki` | Shigaraki (Shimura Tomura) | Ashen blue-gray | Shigaraki |
+| `kurogiri` | Kurogiri (Shirakumo Oboro) | Misty violet-black | Kurogiri |
 | `dabi` | Dabi (Todoroki Touya) | Cold blue flame | Dabi |
 | `toga` | Toga (Himiko) | Blood pink | Toga |
 | `twice` | Twice (Bubaigawara Jin) | Bandage cyan | Twice |
@@ -204,8 +225,9 @@ Action Squad, or independent.
 | `spinner` | Spinner (Iguchi Shuichi) | Scaly red | Spinner |
 | `overhaul` | Overhaul (Chisaki Kai) | Plague-mask gold | Overhaul |
 | `stain` | Stain (Akaguro Chizome) | Bandage red | Stain |
-| `allforone` | All For One | Imperial purple-black | All For One |
-| `muscular` | Muscular | Veiny pink-red | Muscular |
+| `allforone` | All For One (Shigaraki Zen) | Imperial purple-black | All For One |
+| `muscular` | Muscular (Imasuji Goto) | Veiny pink-red | Muscular |
+| `magne` | Hikiishi (Kenji) | Dark magenta-purple | Magne |
 | `geten` | Geten | Pale ice-blue | Geten |
 | `moonfish` | Moonfish | Cold steel-blue | Moonfish |
 | `mustard` | Mustard | Toxic mustard yellow | Mustard |
@@ -216,10 +238,9 @@ Action Squad, or independent.
 | `labrava` | La Brava (Aiba Manami) | Devoted pink | La Brava |
 | `ladynagant` | Lady Nagant (Tsutsumi Kaina) | Two-tone pink/dark-green | Lady Nagant |
 | `garaki` | Dr. Garaki (Ujiko Daruma) | Sickly lab green | Dr. Garaki |
-| `nine` | Nine | Storm gray-purple | Nine |
 
-There's also a 104th option, **`auto`** — the default. Instead of pinning one
-character, it cycles through all 103 themes automatically, switching to the
+There's also a 109th option, **`auto`** — the default. Instead of pinning one
+character, it cycles through all 108 themes automatically, switching to the
 next one every 5 minutes, grouped the way the tables above read (Class 1-A,
 Class 1-B, Big 3, One For All lineage, faculty, pro heroes, villains) and
 A-Z by character name within each group. This is computed live from
@@ -271,6 +292,12 @@ This copies `statusline.ps1` and `set-theme.ps1` to `~/.claude/`, plus the
 one (Rank no longer needs a hook — see [Rank](#rank-hero-career-progression)).
 Restart Claude Code afterwards.
 
+Not on Claude Code — using Codex CLI, a local LLM, or something else
+entirely? See [Using it with Codex, other AI CLIs, or a local
+LLM](#using-it-with-codex-other-ai-clis-or-a-local-llm) below for
+`install.ps1 -Target Shell`, which hooks your terminal's prompt directly
+instead.
+
 `-ExecutionPolicy Bypass` only affects that one process — it does not change any
 system-wide policy and does not require administrator rights, so it works even on
 machines where you can't install software or change execution policy globally.
@@ -289,13 +316,54 @@ If you'd rather do it by hand:
    ```
 3. Restart Claude Code.
 
+## Using it with Codex, other AI CLIs, or a local LLM
+
+`statusline.ps1` only needs Claude Code's specific JSON-on-stdin statusline
+hook for two things: the model name and the 5h/7d rate-limit numbers in
+Cooldown. Everything else (theme, Quirk icon, Agency dir, Rank, the motto)
+works with no input at all — run it with nothing piped in and it just shows
+`?` for the model and skips Cooldown.
+
+Whether you *can* wire it into another tool the same way Claude Code does
+depends on that tool:
+
+- **Codex CLI** has its own `tui.status_line` in `~/.codex/config.toml`, but
+  it only accepts a fixed list of built-in item ids (`model`, `cwd`,
+  `git-branch`, `rate-limits`, …) — there's currently no hook for an
+  arbitrary external command's output ([openai/codex#20244](https://github.com/openai/codex/issues/20244)
+  tracks adding one). So there's no way to drop this statusline into Codex's
+  own status bar today.
+- **Local LLM CLIs** (`ollama run`, llama.cpp's server, etc.) generally have
+  no statusline concept at all — they're just a chat loop in a terminal.
+
+For both cases, and for Claude Code users who'd rather see it as a permanent
+part of their prompt than a statusline, install with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File install.ps1 -Target Shell
+```
+
+This still deploys `statusline.ps1`/`set-theme.ps1` to `~/.claude/`, but
+instead of wiring Claude Code's `settings.json` it hooks your PowerShell
+`$PROFILE` (`function prompt`), printing the MHA line above your normal
+prompt on every command. Since that's your *shell's* prompt, not any one
+AI tool's config, it shows up no matter what's running in that terminal —
+Codex CLI, `ollama run`, a plain shell, or nothing at all — and it chains
+onto whatever prompt customization (Oh My Posh, etc.) you already have
+instead of replacing it. Open a new terminal tab/session afterwards to see
+it; no Cooldown segment in this mode, since rate limits only exist in
+Claude Code's own payload. Works under PowerShell 7 (`pwsh`) on macOS/Linux
+too, via the same `$PROFILE` mechanism.
+
 ## Uninstall
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File uninstall.ps1
 ```
 
-Removes the `statusLine` entry from `settings.json`, and cleans up the legacy
+Removes the `statusLine` entry from `settings.json` if present, and the
+`$PROFILE` prompt hook from `-Target Shell` if present — whichever (or both)
+you installed, no `-Target` flag needed here. Also cleans up the legacy
 `gain-xp.ps1` `Stop` hook if an older install left one (any other hooks you
 have are left untouched). The scripts themselves and any saved theme
 (`mha-theme.txt`) are left on disk — delete them manually from `~/.claude/`
@@ -303,7 +371,8 @@ if you want it fully gone.
 
 ## Requirements
 
-- Windows PowerShell 5.1+ (built into every Windows install) or PowerShell 7+.
+- Windows PowerShell 5.1+ (built into every Windows install) or PowerShell 7+
+  (Windows, macOS, or Linux — needed for the `-Target Shell` install, below).
 - A terminal that renders ANSI/VT100 escape codes (Windows Terminal, VS Code's
   integrated terminal, modern `conhost` — all of what Claude Code normally runs in).
 

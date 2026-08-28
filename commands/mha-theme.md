@@ -1,6 +1,6 @@
 ---
 description: Switch the My Hero Academia statusline theme (Class 1-A, Class 1-B, the Big 3, the One For All lineage, U.A. faculty, pro heroes, and assorted villains), or turn on auto-rotation
-argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa|shinzo|monoma|kendo|tetsutetsu|tokage|shiozaki|kuroiro|kamakiri|komori|awase|bondo|fukidashi|honenuki|kaibara|kodai|rin|shishida|shoda|tsuburaba|tsunotori|yanagi|mirio|tamaki|nejire|yoichi|kudo|brucelee|shinomori|banjo|en|nana|presentmic|midnight|vladking|cementoss|powerloader|nezu|recoverygirl|thirteen|ectoplasm|snipe|hounddog|nighteye|selkie|manual|uwabami|burnin|endeavor|hawks|mirko|bestjeanist|edgeshot|grantorino|mtlady|kamuiwoods|fatgum|ryukyu|gunhead|rocklock|starandstripe|shigaraki|dabi|toga|twice|mrcompress|spinner|overhaul|stain|allforone|muscular|geten|moonfish|mustard|rappa|redestro|skeptic|gentle|labrava|ladynagant|garaki|nine]
+argument-hint: [auto|deku|bakugo|uraraka|todoroki|allmight|iida|momo|kirishima|kaminari|jiro|tokoyami|ashido|asui|shoji|sato|sero|aoyama|ojiro|hagakure|koda|mineta|aizawa|shinzo|monoma|kendo|tetsutetsu|tokage|shiozaki|kuroiro|kamakiri|komori|awase|bondo|fukidashi|honenuki|kaibara|kodai|rin|shishida|shoda|tsuburaba|tsunotori|yanagi|mirio|tamaki|nejire|yoichi|kudo|brucelee|shinomori|banjo|en|nana|presentmic|midnight|vladking|cementoss|powerloader|nezu|recoverygirl|thirteen|ectoplasm|snipe|hounddog|nighteye|selkie|manual|uwabami|burnin|endeavor|hawks|mirko|bestjeanist|edgeshot|grantorino|mtlady|kamuiwoods|fatgum|ryukyu|gunhead|rocklock|starandstripe|shigaraki|kurogiri|dabi|toga|twice|mrcompress|spinner|overhaul|stain|allforone|muscular|geten|moonfish|mustard|rappa|redestro|skeptic|gentle|labrava|ladynagant|garaki]
 allowed-tools: Bash, PowerShell, AskUserQuestion
 ---
 
@@ -123,6 +123,7 @@ motto becomes "Go beyond, Plus Chaos! 😈" instead of U.A.'s. Spans the
 League of Villains, the Meta Liberation Army, the Vanguard Action Squad,
 and independent villains who carried their own arc.
 - **shigaraki** — Shigaraki (Shimura Tomura): ashen blue-gray.
+- **kurogiri** — Kurogiri (Shirakumo Oboro): misty violet-black.
 - **dabi** — Dabi (Todoroki Touya): cold blue flame.
 - **toga** — Toga (Himiko): blood pink.
 - **twice** — Twice (Bubaigawara Jin): bandage cyan.
@@ -130,8 +131,8 @@ and independent villains who carried their own arc.
 - **spinner** — Spinner (Iguchi Shuichi): scaly red.
 - **overhaul** — Overhaul (Chisaki Kai): plague-mask gold.
 - **stain** — Stain (Akaguro Chizome): bandage red.
-- **allforone** — All For One: imperial purple-black.
-- **muscular** — Muscular: veiny pink-red.
+- **allforone** — All For One (Shigaraki Zen): imperial purple-black.
+- **muscular** — Muscular (Imasuji Goto): veiny pink-red.
 - **geten** — Geten: pale ice-blue.
 - **moonfish** — Moonfish: cold steel-blue.
 - **mustard** — Mustard: toxic mustard yellow.
@@ -142,7 +143,6 @@ and independent villains who carried their own arc.
 - **labrava** — La Brava (Aiba Manami): devoted pink.
 - **ladynagant** — Lady Nagant (Tsutsumi Kaina): two-tone pink/dark-green.
 - **garaki** — Dr. Garaki (Ujiko Daruma): sickly lab green.
-- **nine** — Nine: storm gray-purple.
 
 If `$ARGUMENTS` names `auto` or one of the 103 character keys
 (case-insensitive; also accept a close match on the character's first or

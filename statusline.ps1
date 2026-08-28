@@ -1,6 +1,9 @@
-﻿# Claude Code statusline — My Hero Academia theme (pure PowerShell, no node/jq/installs required)
+﻿# My Hero Academia statusline — pure PowerShell, no node/jq/installs required.
+# Wired into Claude Code's statusLine setting by default, but runs standalone
+# too (shell prompt hook, manual invocation) for tools with no such hook of
+# their own — see install.ps1 -Target Shell for Codex/local-LLM/plain-shell use.
 # One line, kept minimal: Quirk (model) | Agency (dir) | Rank (hero level,
-# career-stage) | Cooldown (5h/7d rate limits)
+# career-stage) | Cooldown (5h/7d rate limits, Claude Code only)
 $ErrorActionPreference = 'SilentlyContinue'
 
 # PowerShell's default console encoding is the legacy system codepage, which can't
@@ -13,9 +16,18 @@ $ErrorActionPreference = 'SilentlyContinue'
 # directly against the underlying OS handles, which works whether redirected or not.
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
-$stdinReader = New-Object System.IO.StreamReader([Console]::OpenStandardInput(), $utf8NoBom)
-$raw = $stdinReader.ReadToEnd()
-try { $data = $raw | ConvertFrom-Json } catch { $data = $null }
+# Claude Code always pipes a JSON payload in on stdin. Run standalone instead
+# (a shell prompt hook, a manual test, Codex/local-LLM terminals that have no
+# such payload) and stdin is the interactive console, not a pipe — reading it
+# would block forever waiting for input that will never come. Only attempt
+# the read when something is actually redirected in.
+if ([Console]::IsInputRedirected) {
+    $stdinReader = New-Object System.IO.StreamReader([Console]::OpenStandardInput(), $utf8NoBom)
+    $raw = $stdinReader.ReadToEnd()
+    try { $data = $raw | ConvertFrom-Json } catch { $data = $null }
+} else {
+    $data = $null
+}
 
 function Get-Prop {
     param($Object, [string[]]$Path)
@@ -33,10 +45,35 @@ function Ansi256([int]$code) { "$ESC[38;5;${code}m" }   # closer per-character c
 
 # The short career-stage code shown for a level — a U.A. student climbing
 # through school years, a license, a sidekick job, your own agency, and
-# finally the JP Hero Billboard Chart counting down toward #1.
-function Get-RankAbbrev([int]$level) {
+# finally the JP Hero Billboard Chart counting down toward #1. The chart
+# countdown (Lv40-100, #300-#1) is two curves stitched together, not one:
+#   - Lv40-95 covers #300 down to #10 *linearly* (constant ~5.3 ranks per
+#     level) — a straight line has no flat spot anywhere along it, so
+#     resolution stays even the whole way instead of bunching up early and
+#     going coarse as it nears the Lv95 handoff the way a power curve
+#     (exponent > 1) would.
+#   - Lv95-100 then spreads the last 9 ranks across that final stretch
+#     with exponent 0.4, whose slope keeps *growing* as Lv approaches 100
+#     instead of flattening out — so #1 through #10 stay distinguishable
+#     down to fractions of a level instead of collapsing onto the same
+#     rank the way a straight line or a fast-then-slow curve would right
+#     at the top.
+# Every power curve with exponent > 1 is fast-then-flat: great at one end,
+# coarse at the other. Linear is the only shape with no coarse end at all,
+# which is why the first segment uses it instead of chasing a fast start
+# and paying for it with a dead zone right before the handoff.
+function Get-RankAbbrev([double]$level) {
     if ($level -ge 40) {
-        $rank = [math]::Max(1, 300 - ($level - 40) * 5)
+        $t = ($level - 40) / 60.0        # 0 at Lv40, 1 at Lv100
+        $tBreak = (95.0 - 40) / 60.0     # breakpoint: Lv95 == rank #10
+        if ($t -le $tBreak) {
+            $s = $t / $tBreak
+            $rank = 10 + 290 * (1 - $s)
+        } else {
+            $u = ($t - $tBreak) / (1 - $tBreak)
+            $rank = 1 + 9 * [math]::Pow(1 - $u, 0.4)
+        }
+        $rank = [math]::Max(1, [math]::Min(300, [math]::Round($rank)))
         return "#$rank"
     }
     if ($level -ge 30) { return 'Agency Founder' }
@@ -471,7 +508,7 @@ $Themes = @{
         Hero      = 'Banjo'
     }
     'en' = @{
-        Label     = 'En'
+        Label     = 'Tayutai (En)'
         QuirkIcon = '💨'
         Quirk     = Ansi256 96    # Smokescreen — 6th user, smoke purple
         Agency    = Ansi 97
@@ -616,6 +653,39 @@ $Themes = @{
         Cooldown  = Ansi256 208
         Hero      = 'Burnin'
     }
+    # ---- Wild, Wild Pussycats (Forest Training Camp mentors) ------------
+    'mandalay' = @{
+        Label     = 'Sosaki (Shino)'
+        QuirkIcon = '🐆'
+        Quirk     = Ansi256 172   # Telepath — leopard-print orange-brown
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 94
+        Hero      = 'Mandalay'
+    }
+    'pixiebob' = @{
+        Label     = 'Tsuchikawa (Ryuko)'
+        QuirkIcon = '🪨'
+        Quirk     = Ansi256 136   # Earth Flow — earthen tan
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 94
+        Hero      = 'Pixie-Bob'
+    }
+    'ragdoll' = @{
+        Label     = 'Shiretoko (Tomoko)'
+        QuirkIcon = '🔍'
+        Quirk     = Ansi256 218   # Search — cheerful pink
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 224
+        Hero      = 'Ragdoll'
+    }
+    'tiger' = @{
+        Label     = 'Chatora (Yawara)'
+        QuirkIcon = '🐯'
+        Quirk     = Ansi256 166   # Pliabody — tiger-stripe burnt orange
+        Agency    = Ansi 97
+        Cooldown  = Ansi256 178
+        Hero      = 'Tiger'
+    }
     # ---- Pro heroes ----------------------------------------------------
     'endeavor' = @{
         Label     = 'Endeavor (Todoroki Enji)'
@@ -731,6 +801,15 @@ $Themes = @{
         Hero      = 'Shigaraki'
         Villain   = $true
     }
+    'kurogiri' = @{
+        Label     = 'Shirakumo (Oboro)'
+        QuirkIcon = '🌀'
+        Quirk     = Ansi256 96    # Warp Gate — misty violet-black
+        Agency    = Ansi 91
+        Cooldown  = Ansi256 59
+        Hero      = 'Kurogiri'
+        Villain   = $true
+    }
     'dabi' = @{
         Label     = 'Dabi (Todoroki Touya)'
         QuirkIcon = '🔥'
@@ -795,7 +874,7 @@ $Themes = @{
         Villain   = $true
     }
     'allforone' = @{
-        Label     = 'All For One'
+        Label     = 'Shigaraki (Zen)'
         QuirkIcon = '👑'
         Quirk     = Ansi256 54    # All For One — imperial purple-black
         Agency    = Ansi 91
@@ -804,12 +883,21 @@ $Themes = @{
         Villain   = $true
     }
     'muscular' = @{
-        Label     = 'Muscular'
+        Label     = 'Imasuji (Goto)'
         QuirkIcon = '💪'
         Quirk     = Ansi256 204   # Muscle Augmentation — veiny pink-red
         Agency    = Ansi 91
         Cooldown  = Ansi256 88
         Hero      = 'Muscular'
+        Villain   = $true
+    }
+    'magne' = @{
+        Label     = 'Hikiishi (Kenji)'
+        QuirkIcon = '🧲'
+        Quirk     = Ansi256 90    # Magnetism — dark magenta-purple
+        Agency    = Ansi 91
+        Cooldown  = Ansi256 127
+        Hero      = 'Magne'
         Villain   = $true
     }
     'geten' = @{
@@ -904,15 +992,6 @@ $Themes = @{
         Hero      = 'Dr. Garaki'
         Villain   = $true
     }
-    'nine' = @{
-        Label     = 'Nine'
-        QuirkIcon = '⛈️'
-        Quirk     = Ansi256 103   # Weather Manipulation — storm gray-purple
-        Agency    = Ansi 91
-        Cooldown  = Ansi256 60
-        Hero      = 'Nine'
-        Villain   = $true
-    }
 }
 
 # Rotation order for auto theme-cycling (see below) — grouped the way the
@@ -937,18 +1016,19 @@ $ThemeOrder = @(
     'banjo', 'brucelee', 'en', 'kudo', 'nana', 'shinomori', 'yoichi',
     # U.A. faculty (incl. named sidekicks/mentor heroes)
     'aizawa', 'allmight', 'burnin', 'cementoss', 'ectoplasm', 'hounddog',
-    'manual', 'midnight', 'nezu', 'nighteye', 'powerloader', 'presentmic',
-    'recoverygirl', 'selkie', 'snipe', 'thirteen', 'uwabami', 'vladking',
+    'mandalay', 'manual', 'midnight', 'nezu', 'nighteye', 'pixiebob',
+    'powerloader', 'presentmic', 'ragdoll', 'recoverygirl', 'selkie', 'snipe',
+    'thirteen', 'tiger', 'uwabami', 'vladking',
     # Pro heroes
     'bestjeanist', 'edgeshot', 'endeavor', 'fatgum', 'grantorino',
     'gunhead', 'hawks', 'kamuiwoods', 'mirko', 'mtlady', 'rocklock',
     'ryukyu', 'starandstripe',
     # League of Villains, Meta Liberation Army, and other villains who've
     # carried their own arc
-    'allforone', 'dabi', 'garaki', 'gentle', 'geten', 'labrava', 'ladynagant',
-    'moonfish', 'mrcompress', 'muscular', 'mustard', 'nine', 'overhaul',
-    'rappa', 'redestro', 'shigaraki', 'skeptic', 'spinner', 'stain', 'toga',
-    'twice'
+    'allforone', 'dabi', 'garaki', 'gentle', 'geten', 'kurogiri', 'labrava',
+    'ladynagant', 'magne', 'moonfish', 'mrcompress', 'muscular', 'mustard',
+    'overhaul', 'rappa', 'redestro', 'shigaraki', 'skeptic', 'spinner',
+    'stain', 'toga', 'twice'
 )
 
 # Pick a theme: $env:MHA_STATUSLINE_THEME overrides the saved config, which
@@ -983,6 +1063,33 @@ $C_COOLDOWN = $theme.Cooldown
 $QUIRK_ICON = $theme.QuirkIcon
 $HERO_NAME  = $theme.Hero
 
+# Real name, pulled out of Label's "Surname (GivenName)" shape — e.g. Label
+# 'Iida (Tenya)' with Hero 'Ingenium' gives full RealName 'Iida Tenya'
+# (surname + given name, since neither one is just the hero alias repeated
+# back). When the surname IS the hero alias (Tsuburaba goes by his own
+# surname; Deku/All Might/Present Mic use the codename as the Label prefix
+# with the full real name already spelled out in parens), or the given
+# name IS the hero alias (Todoroki's hero name is his real first name
+# "Shoto"; same for Yoichi/OFA1st), only the other half is new information,
+# so just that half is used instead of duplicating the hero name. No
+# parens at all means either nothing's known (Label equals Hero — Nezu,
+# Snipe, ...), or Label already IS the full real name on its own
+# (Tetsutetsu's real name really is "Tetsutetsu Tetsutetsu", so there's
+# nothing to split out of parens).
+$REAL_NAME = $null
+if ($theme.Label -match '^(.*?)\s*\(([^)]+)\)\s*$') {
+    $labelPrefix, $realCandidate = $Matches[1], $Matches[2]
+    if ($realCandidate -ne $HERO_NAME -and $labelPrefix -ne $HERO_NAME) {
+        $REAL_NAME = "$labelPrefix $realCandidate"
+    } elseif ($realCandidate -ne $HERO_NAME) {
+        $REAL_NAME = $realCandidate
+    } elseif ($labelPrefix -ne $HERO_NAME) {
+        $REAL_NAME = $labelPrefix
+    }
+} elseif ($theme.Label -ne $HERO_NAME) {
+    $REAL_NAME = $theme.Label
+}
+
 $model = Get-Prop $data @('model', 'display_name')
 if (-not $model) { $model = '?' }
 
@@ -995,50 +1102,67 @@ if (-not $dirName) { $dirName = $dir }
 $five = Get-Prop $data @('rate_limits', 'five_hour', 'used_percentage')
 $week = Get-Prop $data @('rate_limits', 'seven_day', 'used_percentage')
 
-# Quirk (model), tagged with the character's hero name
+# Quirk (model), tagged with the character's real name (when known) then hero name.
+# Skip the hero name if every word in it already showed up in the real name —
+# e.g. Nana Shimura's Label is 'Shimura (Nana)' but her Hero field is the
+# reversed-order 'Nana Shimura', and Rappa's Hero field 'Rappa' is just the
+# surname half of his real name 'Kendo Rappa'. Appending it in those cases
+# would just repeat a word we already showed instead of adding one.
 $quirkPart = "$BOLD$C_QUIRK$QUIRK_ICON $model$RESET"
-if ($HERO_NAME) { $quirkPart += " $BOLD$C_QUIRK$HERO_NAME$RESET" }
+if ($REAL_NAME) { $quirkPart += " $BOLD$C_QUIRK$REAL_NAME$RESET" }
+if ($HERO_NAME) {
+    $realWords = @(); if ($REAL_NAME) { $realWords = $REAL_NAME -split '\s+' }
+    $heroWords = $HERO_NAME -split '\s+'
+    $heroAddsNothing = $REAL_NAME -and (@($heroWords | Where-Object { $realWords -notcontains $_ })).Count -eq 0
+    if (-not $heroAddsNothing) { $quirkPart += " $BOLD$C_QUIRK$HERO_NAME$RESET" }
+}
 
 # Agency (current dir)
 $agencyPart = "$C_AGENCY$dirName$RESET"
 
 # Rank (hero level) is driven live by this week's usage — the same
-# rate_limits.seven_day.used_percentage Claude Code already reports (see
-# Cooldown below). No accumulated state file, no Stop hook: the harder you're
-# leaning on Claude this week, the higher your level climbs, and it eases
-# back down as that window rolls over. 0-100% maps onto Lv1-40, the full
-# range Get-RankAbbrev knows how to label. Missing week data (older CLI or a
-# plan without rate limits) just means "no signal yet": Lv1, empty bar.
+# rate_limits.seven_day.used_percentage Claude Code already reports. No
+# accumulated state file, no Stop hook: the harder you're leaning on Claude
+# this week, the higher your level climbs, and it eases back down as that
+# window rolls over. 0-100% maps onto Lv1-100, the full range
+# Get-RankAbbrev knows how to label — U.A. student through Agency Founder
+# by Lv40, then straight up the JP Hero Billboard Chart (#300 down to #1)
+# as usage keeps climbing toward the weekly cap. Missing week data (older
+# CLI or a plan without rate limits) just means "no signal yet": Lv1.
+#
+# Returns both the whole Lv number (for display) and the un-floored
+# Continuous value behind it, because raw used_percentage arrives with far
+# more precision than a 1-100 integer level can carry (feels especially
+# flat right at the top of the chart, where Get-RankAbbrev's curve packs
+# nearly a full level into each single rank). Feeding Continuous straight
+# into Get-RankAbbrev instead of the floored Lv keeps the #rank readable
+# down to whatever fraction of a percent Claude Code actually reports,
+# rather than snapping to whichever whole level the percentage rounds into
+# — no need to also print the raw weekly % just to explain a rank change.
 function Get-LevelFromWeekPct($weekPct) {
-    if ($null -eq $weekPct) { return @{ Level = 1; Progress = 0.0 } }
-    $exact = [math]::Max(0.0, [math]::Min(100.0, [double]$weekPct)) * 0.39
-    $level = [math]::Min(40, 1 + [math]::Floor($exact))
-    $progress = $exact - [math]::Floor($exact)
-    if ($level -ge 40) { $progress = 1.0 }   # maxed out — show a full bar, not a stalled one
-    return @{ Level = [int]$level; Progress = $progress }
+    if ($null -eq $weekPct) { return @{ Level = 1; Continuous = 1.0 } }
+    $continuous = 1 + [math]::Max(0.0, [math]::Min(100.0, [double]$weekPct)) * 0.99
+    $level = [math]::Min(100, [int][math]::Floor($continuous))
+    return @{ Level = $level; Continuous = $continuous }
 }
 
-$rankInfo = Get-LevelFromWeekPct $week
-$rankLevel = $rankInfo.Level
-$rankAbbrev = Get-RankAbbrev $rankLevel
+# Villains skip this segment entirely — Lv/#rank tracks progress up the
+# U.A.-to-Hero-Billboard ladder, and a villain was never on it to begin
+# with, so there's no rank of theirs for weekly usage to stand in for.
+$rankPart = $null
+if (-not $theme.Villain) {
+    $rankInfo = Get-LevelFromWeekPct $week
+    $rankLevel = $rankInfo.Level
+    $rankAbbrev = Get-RankAbbrev $rankInfo.Continuous
+    $rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel$RESET"
+}
 
-$barSegments = 5
-$rankFilled = [math]::Min($barSegments, [math]::Floor($rankInfo.Progress * $barSegments))
-$rankBar = ('▰' * $rankFilled) + ('▱' * ($barSegments - $rankFilled))
-
-$rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar$RESET"
-
-# Cooldown (5h/7d rate limits) — the only remaining optional segment
+# Cooldown (5h rate limit) — the only remaining optional segment. The 7d
+# weekly figure used to ride along here too, but #rank above is now precise
+# enough to speak for itself, so it's dropped rather than shown twice.
 $cooldownPart = $null
-if ($null -ne $five -or $null -ne $week) {
-    $cooldownStr = "$C_COOLDOWN⏱ "
-    if ($null -ne $five) { $cooldownStr += "5h:$([math]::Round([double]$five))%" }
-    if ($null -ne $week) {
-        if ($null -ne $five) { $cooldownStr += ' ' }
-        $cooldownStr += "7d:$([math]::Round([double]$week))%"
-    }
-    $cooldownStr += $RESET
-    $cooldownPart = $cooldownStr
+if ($null -ne $five) {
+    $cooldownPart = "$C_COOLDOWN⏱ 5h:$([math]::Round([double]$five))%$RESET"
 }
 
 $separator = "$DIM · $RESET"
@@ -1057,7 +1181,7 @@ if ($theme.Villain) {
 $parts = New-Object System.Collections.Generic.List[string]
 $parts.Add($quirkPart)
 $parts.Add($agencyPart)
-$parts.Add($rankPart)
+if ($rankPart) { $parts.Add($rankPart) }
 if ($cooldownPart) { $parts.Add($cooldownPart) }
 $parts.Add($mottoPart)
 $line = $parts -join $separator
