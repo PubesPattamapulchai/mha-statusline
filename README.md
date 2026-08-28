@@ -446,3 +446,18 @@ Copying the file doesn't turn it on by itself. Enable it with:
 
 then pick **UA Hero Briefing** under Output style. Switch back to Default
 the same way, or via `outputStyle` in `settings.json`.
+
+## Bonus: Aizawa-sensei strict code review
+
+`install.ps1` also drops in an `aizawa` subagent and a `/aizawa-review`
+command — a stricter, no-fluff alternative to a default code review. Flat,
+blunt, verdict-first, no praise-sandwiching; only says something is good
+when it actually is. Read-only (`Read`/`Grep`/`Glob`/`Bash` for running
+tests, no `Edit`/`Write`) — it reviews, it doesn't fix.
+
+```
+/aizawa-review
+```
+
+or narrow the scope: `/aizawa-review just the auth changes`. See
+`agents/aizawa.md` for the full persona.

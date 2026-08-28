@@ -72,6 +72,21 @@ if (Test-Path $outputStylePath) {
     $changed = $true
 }
 
+# Aizawa-sensei review subagent + /aizawa-review command — another inert
+# opt-in extra (see install.ps1), same pattern as the output style above.
+$agentPath = Join-Path $HOME '.claude\agents\aizawa.md'
+if (Test-Path $agentPath) {
+    Remove-Item -Path $agentPath -Force
+    Write-Host "Removed $agentPath" -ForegroundColor Green
+    $changed = $true
+}
+$aizawaCommandPath = Join-Path $HOME '.claude\commands\aizawa-review.md'
+if (Test-Path $aizawaCommandPath) {
+    Remove-Item -Path $aizawaCommandPath -Force
+    Write-Host "Removed $aizawaCommandPath" -ForegroundColor Green
+    $changed = $true
+}
+
 if ($changed) {
     Write-Host "Restart Claude Code, or open a new terminal session, to see the change." -ForegroundColor Yellow
 } else {

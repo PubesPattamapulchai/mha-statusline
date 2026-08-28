@@ -45,6 +45,13 @@ if ($Target -eq 'ClaudeCode') {
     $outputStylesDir = Join-Path $claudeDir 'output-styles'
     New-Item -ItemType Directory -Force -Path $outputStylesDir | Out-Null
     Copy-Item -Path (Join-Path $PSScriptRoot 'output-styles\ua-hero.md') -Destination (Join-Path $outputStylesDir 'ua-hero.md') -Force
+
+    # Aizawa-sensei review subagent + /aizawa-review command (optional bonus,
+    # same "just copy the file" install as everything else here).
+    $agentsDir = Join-Path $claudeDir 'agents'
+    New-Item -ItemType Directory -Force -Path $agentsDir | Out-Null
+    Copy-Item -Path (Join-Path $PSScriptRoot 'agents\aizawa.md') -Destination (Join-Path $agentsDir 'aizawa.md') -Force
+    Copy-Item -Path (Join-Path $PSScriptRoot 'commands\aizawa-review.md') -Destination (Join-Path $commandsDir 'aizawa-review.md') -Force
 }
 
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
@@ -99,6 +106,7 @@ if ($Target -eq 'ClaudeCode') {
     Write-Host "settings.json updated: $settingsPath" -ForegroundColor Green
     Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
     Write-Host "Optional: try the 'UA Hero Briefing' output style via /config (not enabled by default)." -ForegroundColor Yellow
+    Write-Host "Try the strict reviewer: /aizawa-review" -ForegroundColor Yellow
 } else {
     # Shell target: hook the PowerShell prompt itself instead of any one
     # tool's config. CurrentUserAllHosts covers powershell.exe, pwsh, and the
