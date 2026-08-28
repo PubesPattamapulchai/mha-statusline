@@ -1,0 +1,10 @@
+#!/bin/sh
+# mha-statusline commit-hero-names shim.
+#
+# Git looks for an extension-less "prepare-commit-msg" in .git/hooks/ and
+# runs it through its bundled sh (Git for Windows ships one). This just
+# hands off to the real logic next to it, which install-git-hook.ps1 copies
+# alongside this file so the relative path always resolves regardless of
+# where the source repo lives.
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$DIR/prepare-commit-msg.ps1" "$@"
