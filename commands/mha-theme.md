@@ -9,11 +9,12 @@ themes plus a 109th special option, `auto`, with a one-line flavor
 description each (for when you need to present them):
 
 **Auto-rotation**
-- **auto** — cycles through all 108 themes automatically, a new one every 5
-  minutes (a full lap takes about eight and a half hours), grouped Class
-  1-A → Class 1-B → Big 3 → One For All lineage → faculty → pro heroes →
-  villains, A-Z by character name within each group, computed live from
-  wall-clock time (no background task needed). Default on a fresh install.
+- **auto** — cycles through all 108 themes automatically, a new one roughly
+  every 2 minutes 47 seconds (a full lap takes exactly 5 hours), grouped
+  Class 1-A → Class 1-B → Big 3 → One For All lineage → faculty → pro
+  heroes → villains, A-Z by character name within each group, computed
+  live from wall-clock time (no background task needed). Default on a
+  fresh install.
 
 **The core four + All Might**
 - **deku** — Deku (Midoriya Izuku): One For All green, hero-red accents.
@@ -162,8 +163,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "$HOME/.claude/set-theme.ps1
 If `$ARGUMENTS` is empty (or doesn't match a key), use the AskUserQuestion
 tool: offer `auto` plus the three most-requested character themes (bakugo,
 uraraka, todoroki) as the quick-pick options — mention in the question text
-that `auto` cycles the whole roster automatically every 5 minutes and is the
-default, and that any other character above (Class 1-A, Class 1-B, the Big
+that `auto` cycles the whole roster automatically (a full lap every 5
+hours) and is the default, and that any other character above (Class 1-A, Class 1-B, the Big
 3, the One For All lineage, U.A. faculty, a named sidekick, a pro hero, or a
 villain) can be typed via "Other" — that's faster than the script's own
 terminal menu since it's inline in the chat, and the full option list
@@ -175,5 +176,6 @@ their pick.
 After it runs, confirm in one line and remind them to open a new Claude Code
 session (or restart) to see it — the statusline is rendered by a separate
 process that only re-reads the theme file on its next invocation. If they
-picked `auto`, also mention it'll keep changing every 5 minutes on its own
-until they pin a specific theme again with `/mha-theme <name>`.
+picked `auto`, also mention it'll keep changing on its own (a full lap of
+all 108 themes every 5 hours) until they pin a specific theme again with
+`/mha-theme <name>`.

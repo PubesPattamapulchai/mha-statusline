@@ -17,7 +17,7 @@ One line, kept minimal:
 |---|---|---|
 | 💥 Quirk | Model name + the character's hero name (icon/name vary by [theme](#themes) — ✊ Deku for Deku, shown above) | `model.display_name` |
 | Agency | Current folder name | `workspace.current_dir` |
-| Rank | Your hero career — see [Rank](#rank-hero-career-progression) below. Skipped entirely on League of Villains themes | `rate_limits.seven_day.used_percentage` |
+| Rank | Your hero career, or your threat classification on League of Villains themes — see [Rank](#rank-hero-career-progression) below | `rate_limits.seven_day.used_percentage` |
 | ⏱ Cooldown | Rate limit usage (5h window) | `rate_limits.five_hour` |
 | Motto | "Go beyond, Plus Ultra! 💪" — U.A.'s motto, always shown last in a theme-neutral magenta since it belongs to the school, not any one hero. League of Villains themes swap it for "Go beyond, Plus Chaos! 😈" instead | static |
 
@@ -60,10 +60,31 @@ state file, no hook, no accumulation: it's recalculated fresh on every
 statusline render — using the full decimal precision Claude Code reports,
 not a rounded whole number — so it tracks your *current* 7-day window and
 eases back down as that window rolls over. Missing rate-limit data (older
-CLI, or a plan without them) just shows Lv1. League of Villains themes
-skip this whole segment: a villain was never climbing U.A.'s ladder or the
-Hero Billboard Chart, so there's no rank of theirs for weekly usage to
-stand in for.
+CLI, or a plan without them) just shows Lv1.
+
+### League of Villains themes: threat classification, not a career
+
+A villain was never climbing U.A.'s ladder, so League of Villains themes
+read the same live level through a different lens: how big a threat the
+Hero Public Safety Commission considers you *this week*, shown as a plain
+label with no `Lv<N>` number attached — villains don't have a leveling
+system or a numbered chart of their own in canon, so pinning one on them
+would just be borrowing the hero mechanic instead of representing
+something that actually exists in the story:
+
+| Level | Shown as |
+|---|---|
+| 1-4 | `Petty Criminal` |
+| 5-9 | `Registered Villain` |
+| 10-14 | `Wanted Villain` |
+| 15-19 | `Dangerous Villain` |
+| 20-29 | `High-Priority Target` |
+| 30-39 | `League-affiliated Threat` |
+| 40+ | `Symbol of Fear` — the epithet the series itself uses to frame Shigaraki/All For One as All Might's dark mirror, opposite his "Symbol of Peace" |
+
+Same underlying level, same 0-100% mapping, no `Lv` number, no XP bar, and
+no [level-up banner](#quirk-registry-level-up-banner) — those three are
+tied to a leveling concept this classification deliberately doesn't have.
 
 ### Support Course: cosmetic XP-bar unlocks
 
@@ -285,14 +306,14 @@ Action Squad, or independent.
 
 There's also a 109th option, **`auto`** — the default. Instead of pinning one
 character, it cycles through all 108 themes automatically, switching to the
-next one every 5 minutes, grouped the way the tables above read (Class 1-A,
-Class 1-B, Big 3, One For All lineage, faculty, pro heroes, villains) and
-A-Z by character name within each group. This is computed live from
-wall-clock time inside `statusline.ps1` itself (a 5-minute UTC bucket picks
-the index), so there's no background process, scheduled task, or timer to
+next one roughly every 2 minutes 47 seconds, grouped the way the tables
+above read (Class 1-A, Class 1-B, Big 3, One For All lineage, faculty, pro
+heroes, villains) and A-Z by character name within each group. This is
+computed live from wall-clock time inside `statusline.ps1` itself (a UTC
+bucket picks the index, its width set so 108 themes divide evenly across
+5 hours), so there's no background process, scheduled task, or timer to
 manage — it just changes the next time the statusline re-renders after the
-bucket rolls over. A full lap of the roster takes about eight and a half
-hours.
+bucket rolls over. A full lap of the roster takes exactly 5 hours.
 
 `install.ps1` asks you to pick one on first install (default `auto`). To
 switch later, the easiest way is right from the Claude Code chat:

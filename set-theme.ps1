@@ -35,7 +35,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $themes = [ordered]@{
-    'auto'      = 'Auto-rotate — cycles through all 108 themes, a new one every 5 minutes [default]'
+    'auto'      = 'Auto-rotate — cycles through all 108 themes, a full lap every 5 hours [default]'
     'deku'      = 'Deku (Midoriya Izuku) — One For All green, hero-red accents'
     'uraraka'   = 'Uraraka (Ochako) — zero-gravity pink, sky-blue cooldown'
     'bakugo'    = 'Bakugo (Katsuki) — explosion orange, olive accents'

@@ -84,6 +84,24 @@ function Get-RankAbbrev([double]$level) {
     return 'Y1'
 }
 
+# Villain equivalent of Get-RankAbbrev, on the same weekly-usage-driven
+# integer level but reframed as how big a threat the Hero Public Safety
+# Commission considers you instead of a school/license career — villains
+# were never on U.A.'s ladder to begin with. No number at either end: there
+# is no numbered "Villain Billboard Chart" the way the JP Hero Billboard
+# Chart is canonically numbered, so the top tier is a single fixed epithet
+# instead of a countdown — the same one the series actually uses to frame
+# Shigaraki/All For One as All Might's dark mirror opposite "Symbol of Peace".
+function Get-ThreatLabel([int]$level) {
+    if ($level -ge 40) { return 'Symbol of Fear' }
+    if ($level -ge 30) { return 'League-affiliated Threat' }
+    if ($level -ge 20) { return 'High-Priority Target' }
+    if ($level -ge 15) { return 'Dangerous Villain' }
+    if ($level -ge 10) { return 'Wanted Villain' }
+    if ($level -ge 5)  { return 'Registered Villain' }
+    return 'Petty Criminal'
+}
+
 # Quirk Registry: boxed "LEVEL UP!" banner shown for one render right after
 # your live level crosses a multiple-of-10 boundary upward. Rank itself
 # accumulates nothing, but "did I just cross a boundary" is inherently a
@@ -1072,12 +1090,14 @@ if ($themeKey) { $themeKey = $themeKey.Trim([char]0xFEFF, ' ', "`r", "`n").ToLow
 # 'auto' (and no saved theme at all) means "don't pin one, cycle the whole
 # roster automatically". This is purely a function of wall-clock time, not a
 # background process or scheduled task: statusline.ps1 re-runs on every
-# render, and Claude Code renders often enough that a 5-minute bucket feels
-# live. Deriving the bucket from UTC time (not random) keeps parallel
-# sessions/panes in agreement on which theme is "current" right now.
+# render, and Claude Code renders often enough for a bucket a few minutes
+# wide to feel live. Deriving the bucket from UTC time (not random) keeps
+# parallel sessions/panes in agreement on which theme is "current" right
+# now. Bucket width is derived from $ThemeOrder.Count so a full lap always
+# takes 5 hours no matter how many themes get added to the roster later.
 if (-not $themeKey -or $themeKey -eq 'auto') {
-    $epochMinutes = [math]::Floor(([DateTimeOffset]::UtcNow).ToUnixTimeSeconds() / 60)
-    $bucket = [math]::Floor($epochMinutes / 5)
+    $secondsPerTheme = (5 * 3600.0) / $ThemeOrder.Count
+    $bucket = [math]::Floor(([DateTimeOffset]::UtcNow).ToUnixTimeSeconds() / $secondsPerTheme)
     $themeKey = $ThemeOrder[$bucket % $ThemeOrder.Count]
 } elseif (-not $Themes.ContainsKey($themeKey)) {
     $themeKey = 'deku'
@@ -1173,14 +1193,21 @@ function Get-LevelFromWeekPct($weekPct) {
     return @{ Level = $level; Continuous = $continuous }
 }
 
-# Villains skip this segment entirely — Lv/#rank tracks progress up the
-# U.A.-to-Hero-Billboard ladder, and a villain was never on it to begin
-# with, so there's no rank of theirs for weekly usage to stand in for.
+# Both heroes and villains get a live rank driven by this week's usage —
+# they just read it differently. Heroes climb U.A.'s ladder (Lv + #rank);
+# villains were never on that ladder, so they get a Hero Public Safety
+# Commission threat classification instead (see Get-ThreatLabel) — no Lv
+# number, no XP bar, no level-up banner, since none of those are a
+# "leveling" concept that exists for villains in canon.
 $rankPart = $null
 $bannerLines = @()
-if (-not $theme.Villain) {
-    $rankInfo = Get-LevelFromWeekPct $week
-    $rankLevel = $rankInfo.Level
+$rankInfo = Get-LevelFromWeekPct $week
+$rankLevel = $rankInfo.Level
+
+if ($theme.Villain) {
+    $threatLabel = Get-ThreatLabel $rankLevel
+    $rankPart = "$C_QUIRK$threatLabel$RESET"
+} else {
     $rankAbbrev = Get-RankAbbrev $rankInfo.Continuous
 
     # Support Course cosmetic unlocks — reskins the progress bar's glyph pair

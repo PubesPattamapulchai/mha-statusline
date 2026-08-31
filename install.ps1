@@ -219,7 +219,7 @@ function prompt {
 }
 
 Write-Host "Change theme anytime: $(if ($Target -eq 'ClaudeCode') { 'type /mha-theme in Claude Code, or run ' } else { 'run ' })powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
-Write-Host "Default theme is 'auto' -- it cycles the whole roster every 5 minutes. Pin one with $(if ($Target -eq 'ClaudeCode') { '/mha-theme <name>' } else { 'set-theme.ps1 -Theme <name>' }) any time." -ForegroundColor Yellow
+Write-Host "Default theme is 'auto' -- it cycles the whole roster, a full lap every 5 hours. Pin one with $(if ($Target -eq 'ClaudeCode') { '/mha-theme <name>' } else { 'set-theme.ps1 -Theme <name>' }) any time." -ForegroundColor Yellow
 if ($Target -eq 'ClaudeCode') {
     Write-Host "Agency Sim (experimental): patrol/villain/mission events now logged per turn. Check them with /patrol." -ForegroundColor Yellow
 }
