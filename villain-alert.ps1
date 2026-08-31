@@ -27,33 +27,119 @@ $notificationType = if ($data) { $data.notification_type } else { $null }
 $notificationMessage = if ($data) { $data.notification_message } else { $null }
 if (-not $notificationMessage) { $notificationMessage = 'Claude needs your input.' }
 
-# Small icon+hero-name-only lookup -- deliberately NOT the full color
-# catalogue from statusline.ps1 (OSC 9 desktop notifications are plain text,
-# colors don't apply here, and duplicating 22 entries' worth of ANSI codes
-# for a feature that can't render them would just be drift-risk for nothing).
+# Icon+hero-name-only lookup -- deliberately NOT the full color catalogue
+# from statusline.ps1 (OSC 9 desktop notifications are plain text, colors
+# don't apply here). Kept in sync with statusline.ps1's $Themes roster --
+# regenerate by extracting each theme's QuirkIcon/Hero if that roster grows.
 $HeroNames = @{
-    'deku'      = @{ Icon = '✊'; Name = 'Deku' }
-    'uraraka'   = @{ Icon = '🪐'; Name = 'Uravity' }
-    'bakugo'    = @{ Icon = '💥'; Name = 'Dynamight' }
-    'todoroki'  = @{ Icon = '❄️'; Name = 'Shoto' }
-    'allmight'  = @{ Icon = '💪'; Name = 'All Might' }
-    'iida'      = @{ Icon = '🦿'; Name = 'Ingenium' }
-    'momo'      = @{ Icon = '✨'; Name = 'Creati' }
+    'aizawa' = @{ Icon = '🧣'; Name = 'Eraser Head' }
+    'allforone' = @{ Icon = '👑'; Name = 'All For One' }
+    'allmight' = @{ Icon = '💪'; Name = 'All Might' }
+    'aoyama' = @{ Icon = '💫'; Name = "Can't Stop Twinkling" }
+    'ashido' = @{ Icon = '🧪'; Name = 'Pinky' }
+    'asui' = @{ Icon = '🐸'; Name = 'Froppy' }
+    'awase' = @{ Icon = '🔧'; Name = 'Welder' }
+    'bakugo' = @{ Icon = '💥'; Name = 'Dynamight' }
+    'banjo' = @{ Icon = '〰️'; Name = 'Banjo' }
+    'bestjeanist' = @{ Icon = '🧵'; Name = 'Best Jeanist' }
+    'bondo' = @{ Icon = '🧴'; Name = 'Plamo' }
+    'brucelee' = @{ Icon = '🥋'; Name = 'Bruce Lee' }
+    'burnin' = @{ Icon = '🔥'; Name = 'Burnin' }
+    'cementoss' = @{ Icon = '🧱'; Name = 'Cementoss' }
+    'dabi' = @{ Icon = '🔥'; Name = 'Dabi' }
+    'deku' = @{ Icon = '✊'; Name = 'Deku' }
+    'ectoplasm' = @{ Icon = '👥'; Name = 'Ectoplasm' }
+    'edgeshot' = @{ Icon = '🥷'; Name = 'Edgeshot' }
+    'en' = @{ Icon = '💨'; Name = 'En' }
+    'endeavor' = @{ Icon = '🔥'; Name = 'Endeavor' }
+    'fatgum' = @{ Icon = '🍔'; Name = 'Fat Gum' }
+    'fukidashi' = @{ Icon = '💬'; Name = 'Comicman' }
+    'garaki' = @{ Icon = '🧪'; Name = 'Dr. Garaki' }
+    'gentle' = @{ Icon = '🎩'; Name = 'Gentle Criminal' }
+    'geten' = @{ Icon = '🧊'; Name = 'Geten' }
+    'grantorino' = @{ Icon = '👴'; Name = 'Gran Torino' }
+    'gunhead' = @{ Icon = '🥊'; Name = 'Gunhead' }
+    'hagakure' = @{ Icon = '🫥'; Name = 'Invisible Girl' }
+    'hawks' = @{ Icon = '🪶'; Name = 'Hawks' }
+    'honenuki' = @{ Icon = '🟫'; Name = 'Mudman' }
+    'hounddog' = @{ Icon = '🐕'; Name = 'Hound Dog' }
+    'iida' = @{ Icon = '🦿'; Name = 'Ingenium' }
+    'jiro' = @{ Icon = '🎧'; Name = 'Earphone Jack' }
+    'kaibara' = @{ Icon = '🌪️'; Name = 'Spiral' }
+    'kamakiri' = @{ Icon = '🦗'; Name = 'Jack Mantis' }
+    'kaminari' = @{ Icon = '⚡'; Name = 'Chargezuma' }
+    'kamuiwoods' = @{ Icon = '🌳'; Name = 'Kamui Woods' }
+    'kendo' = @{ Icon = '👊'; Name = 'Battle Fist' }
     'kirishima' = @{ Icon = '🪨'; Name = 'Red Riot' }
-    'kaminari'  = @{ Icon = '⚡'; Name = 'Chargezuma' }
-    'jiro'      = @{ Icon = '🎧'; Name = 'Earphone Jack' }
-    'tokoyami'  = @{ Icon = '🌑'; Name = 'Tsukuyomi' }
-    'ashido'    = @{ Icon = '🧪'; Name = 'Pinky' }
-    'asui'      = @{ Icon = '🐸'; Name = 'Froppy' }
-    'shoji'     = @{ Icon = '🐙'; Name = 'Tentacole' }
-    'sato'      = @{ Icon = '🍬'; Name = 'Sugarman' }
-    'sero'      = @{ Icon = '📼'; Name = 'Cellophane' }
-    'aoyama'    = @{ Icon = '💫'; Name = "Can't Stop Twinkling" }
-    'ojiro'     = @{ Icon = '🐒'; Name = 'Tailman' }
-    'hagakure'  = @{ Icon = '🫥'; Name = 'Invisible Girl' }
-    'koda'      = @{ Icon = '🦉'; Name = 'Anima' }
-    'mineta'    = @{ Icon = '🟣'; Name = 'Grape Juice' }
-    'aizawa'    = @{ Icon = '🧣'; Name = 'Eraser Head' }
+    'koda' = @{ Icon = '🦉'; Name = 'Anima' }
+    'kodai' = @{ Icon = '📏'; Name = 'Rule' }
+    'komori' = @{ Icon = '🍄'; Name = 'Shemage' }
+    'kudo' = @{ Icon = '⚙️'; Name = 'Kudo' }
+    'kurogiri' = @{ Icon = '🌀'; Name = 'Kurogiri' }
+    'kuroiro' = @{ Icon = '⚫'; Name = 'Vantablack' }
+    'labrava' = @{ Icon = '💕'; Name = 'La Brava' }
+    'ladynagant' = @{ Icon = '🎯'; Name = 'Lady Nagant' }
+    'magne' = @{ Icon = '🧲'; Name = 'Magne' }
+    'mandalay' = @{ Icon = '🐆'; Name = 'Mandalay' }
+    'manual' = @{ Icon = '💧'; Name = 'Manual' }
+    'midnight' = @{ Icon = '🌙'; Name = 'Midnight' }
+    'mineta' = @{ Icon = '🟣'; Name = 'Grape Juice' }
+    'mirio' = @{ Icon = '👻'; Name = 'Lemillion' }
+    'mirko' = @{ Icon = '🐰'; Name = 'Mirko' }
+    'momo' = @{ Icon = '✨'; Name = 'Creati' }
+    'monoma' = @{ Icon = '🪞'; Name = 'Phantom Thief' }
+    'moonfish' = @{ Icon = '🦈'; Name = 'Moonfish' }
+    'mrcompress' = @{ Icon = '🎪'; Name = 'Mr. Compress' }
+    'mtlady' = @{ Icon = '🗼'; Name = 'Mt. Lady' }
+    'muscular' = @{ Icon = '💪'; Name = 'Muscular' }
+    'mustard' = @{ Icon = '☠️'; Name = 'Mustard' }
+    'nana' = @{ Icon = '🪽'; Name = 'Nana Shimura' }
+    'nejire' = @{ Icon = '🌀'; Name = 'Nejire-chan' }
+    'nezu' = @{ Icon = '🐭'; Name = 'Nezu' }
+    'nighteye' = @{ Icon = '👁️'; Name = 'Sir Nighteye' }
+    'ojiro' = @{ Icon = '🐒'; Name = 'Tailman' }
+    'overhaul' = @{ Icon = '🧤'; Name = 'Overhaul' }
+    'pixiebob' = @{ Icon = '🪨'; Name = 'Pixie-Bob' }
+    'powerloader' = @{ Icon = '⛏️'; Name = 'Power Loader' }
+    'presentmic' = @{ Icon = '🎤'; Name = 'Present Mic' }
+    'ragdoll' = @{ Icon = '🔍'; Name = 'Ragdoll' }
+    'rappa' = @{ Icon = '🥋'; Name = 'Rappa' }
+    'recoverygirl' = @{ Icon = '💊'; Name = 'Recovery Girl' }
+    'redestro' = @{ Icon = '💰'; Name = 'Re-Destro' }
+    'rin' = @{ Icon = '🐉'; Name = 'Dragon Shroud' }
+    'rocklock' = @{ Icon = '🔒'; Name = 'Rock Lock' }
+    'ryukyu' = @{ Icon = '🐲'; Name = 'Ryukyu' }
+    'sato' = @{ Icon = '🍬'; Name = 'Sugarman' }
+    'selkie' = @{ Icon = '🦭'; Name = 'Selkie' }
+    'sero' = @{ Icon = '📼'; Name = 'Cellophane' }
+    'shigaraki' = @{ Icon = '🖐️'; Name = 'Shigaraki' }
+    'shinomori' = @{ Icon = '🥷'; Name = 'Shinomori' }
+    'shinzo' = @{ Icon = '🧠'; Name = 'NightHide' }
+    'shiozaki' = @{ Icon = '🌿'; Name = 'Vine' }
+    'shishida' = @{ Icon = '🦁'; Name = 'Gevaudan' }
+    'shoda' = @{ Icon = '💣'; Name = 'Mines' }
+    'shoji' = @{ Icon = '🐙'; Name = 'Tentacole' }
+    'skeptic' = @{ Icon = '🎮'; Name = 'Skeptic' }
+    'snipe' = @{ Icon = '🔫'; Name = 'Snipe' }
+    'spinner' = @{ Icon = '🦎'; Name = 'Spinner' }
+    'stain' = @{ Icon = '🗡️'; Name = 'Stain' }
+    'starandstripe' = @{ Icon = '🇺🇸'; Name = 'Star and Stripe' }
+    'tamaki' = @{ Icon = '🍽️'; Name = 'Suneater' }
+    'tetsutetsu' = @{ Icon = '🔩'; Name = 'Real Steel' }
+    'thirteen' = @{ Icon = '🕳️'; Name = 'Thirteen' }
+    'tiger' = @{ Icon = '🐯'; Name = 'Tiger' }
+    'todoroki' = @{ Icon = '❄️'; Name = 'Shoto' }
+    'toga' = @{ Icon = '🩸'; Name = 'Toga' }
+    'tokage' = @{ Icon = '🦎'; Name = 'Lizardy' }
+    'tokoyami' = @{ Icon = '🌑'; Name = 'Tsukuyomi' }
+    'tsuburaba' = @{ Icon = '🫧'; Name = 'Tsuburaba' }
+    'tsunotori' = @{ Icon = '🦄'; Name = 'Rocketti' }
+    'twice' = @{ Icon = '🎭'; Name = 'Twice' }
+    'uraraka' = @{ Icon = '🪐'; Name = 'Uravity' }
+    'uwabami' = @{ Icon = '🐍'; Name = 'Uwabami' }
+    'vladking' = @{ Icon = '🩸'; Name = 'Vlad King' }
+    'yanagi' = @{ Icon = '🔮'; Name = 'Emily' }
+    'yoichi' = @{ Icon = '🕊️'; Name = 'Yoichi' }
 }
 
 $themeKey = $env:MHA_STATUSLINE_THEME
