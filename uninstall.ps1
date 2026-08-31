@@ -86,6 +86,20 @@ if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PS
     }
 }
 
+# Same for agency-sim.ps1's separate Stop hook entry.
+if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Stop') {
+    $agencySimDest = Join-Path $HOME '.claude\agency-sim.ps1'
+    $agencySimCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$agencySimDest`""
+    $kept = @(@($settings.hooks.Stop) | Where-Object {
+        -not (@($_.hooks) | Where-Object { $_.command -eq $agencySimCommand })
+    })
+    if ($kept.Count -lt @($settings.hooks.Stop).Count) {
+        $settings.hooks.Stop = $kept
+        Write-Host "Removed agency-sim.ps1 from the Stop hook." -ForegroundColor Green
+        $changed = $true
+    }
+}
+
 if ($changed) {
     $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 }
@@ -110,4 +124,4 @@ if ($changed) {
 } else {
     Write-Host "Nothing to remove." -ForegroundColor Yellow
 }
-Write-Host "statusline.ps1, set-theme.ps1, commands\mha-theme.md, and any saved theme (mha-theme.txt) are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow
+Write-Host "statusline.ps1, agency-sim.ps1, set-theme.ps1, commands\mha-theme.md, commands\patrol.md, and any saved theme/agency state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow

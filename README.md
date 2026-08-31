@@ -484,3 +484,27 @@ is currently active, same as the statusline.
 
 `uninstall.ps1` removes just this hook entry, same merge-safe way it
 removes the `Stop` hook — other hooks you have configured are untouched.
+
+## Bonus (experimental): Agency Sim patrol log
+
+A separate `Stop` hook (`agency-sim.ps1`, its own state file, its own
+lock — kept fully independent of the Rank/XP feature) logs one event per
+finished turn:
+
+- **mission** — this turn ran a `git commit` or `git push`
+- **villain** — this turn hit a tool error, and wasn't a mission turn
+- **patrol** — everything else, the default
+
+Check the log with:
+
+```
+/patrol
+```
+
+which reports the real counts and the last few events — plain factual
+readout, not generated narration. This is intentionally Phase 1 of a
+bigger idea (see `docs/PROJECT-IDEAS.md` #6): event classification only,
+no story generation, no statusline integration. Classification is read
+straight from the turn's transcript (only the lines added since the last
+run — cheap even on a long session), matched against the real transcript
+format rather than guessed at.

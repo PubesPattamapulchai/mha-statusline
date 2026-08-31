@@ -59,6 +59,13 @@ if ($Target -eq 'ClaudeCode') {
 $villainAlertDest = Join-Path $claudeDir 'villain-alert.ps1'
 Copy-Item -Path (Join-Path $PSScriptRoot 'villain-alert.ps1') -Destination $villainAlertDest -Force
 
+# And agency-sim.ps1 (Phase 1 of the Agency Sim companion feature: logs a
+# patrol/villain/mission event per turn, no narration built on top yet -
+# see docs/PROJECT-IDEAS.md #6) plus the /patrol command that reports it.
+$agencySimDest = Join-Path $claudeDir 'agency-sim.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'agency-sim.ps1') -Destination $agencySimDest -Force
+Copy-Item -Path (Join-Path $PSScriptRoot 'commands\patrol.md') -Destination (Join-Path $commandsDir 'patrol.md') -Force
+
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
 # script update shouldn't reset a theme you already chose via set-theme.ps1.
 # Shared across targets: the same mha-theme.txt drives both.
@@ -130,6 +137,22 @@ if ($Target -eq 'ClaudeCode') {
         $settings.hooks.Notification = @(@($settings.hooks.Notification) + $notificationEntry)
     }
 
+    # Wire agency-sim.ps1 as its own separate Stop hook entry (alongside any
+    # other Stop hooks already there, not replacing them) - same merge-safe pattern.
+    $agencySimCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$agencySimDest`""
+    $agencySimAlreadyWired = $false
+    foreach ($entry in @($settings.hooks.Stop)) {
+        foreach ($h in @($entry.hooks)) {
+            if ($h.command -eq $agencySimCommand) { $agencySimAlreadyWired = $true }
+        }
+    }
+    if (-not $agencySimAlreadyWired) {
+        $agencySimEntry = [PSCustomObject]@{
+            hooks = @([PSCustomObject]@{ type = 'command'; command = $agencySimCommand; timeout = 10 })
+        }
+        $settings.hooks.Stop = @(@($settings.hooks.Stop) + $agencySimEntry)
+    }
+
     $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 
     Write-Host "Installed to $dest" -ForegroundColor Green
@@ -197,4 +220,7 @@ function prompt {
 
 Write-Host "Change theme anytime: $(if ($Target -eq 'ClaudeCode') { 'type /mha-theme in Claude Code, or run ' } else { 'run ' })powershell -NoProfile -ExecutionPolicy Bypass -File `"$claudeDir\set-theme.ps1`"" -ForegroundColor Yellow
 Write-Host "Default theme is 'auto' -- it cycles the whole roster every 5 minutes. Pin one with $(if ($Target -eq 'ClaudeCode') { '/mha-theme <name>' } else { 'set-theme.ps1 -Theme <name>' }) any time." -ForegroundColor Yellow
+if ($Target -eq 'ClaudeCode') {
+    Write-Host "Agency Sim (experimental): patrol/villain/mission events now logged per turn. Check them with /patrol." -ForegroundColor Yellow
+}
 Write-Host "Go beyond, Plus Ultra! 💪" -ForegroundColor Magenta
