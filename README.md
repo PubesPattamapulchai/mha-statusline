@@ -65,6 +65,50 @@ skip this whole segment: a villain was never climbing U.A.'s ladder or the
 Hero Billboard Chart, so there's no rank of theirs for weekly usage to
 stand in for.
 
+### Support Course: cosmetic XP-bar unlocks
+
+The Rank segment also shows a 5-segment bar for progress toward your next
+level (`Y2 · Lv7 ▮▯▯▯▯`), and its glyph pair upgrades as your live level
+climbs past a threshold — purely cosmetic, same information, different
+look, framed as Support Course gear upgrades:
+
+| Level | Bar becomes |
+|---|---|
+| 1-4 | `▰▱` (default) |
+| 5+ | `▮▯` Twin-Blade Gauge |
+| 10+ | `★☆` Starlight Gauge |
+| 15+ | `⬢⬡` Hex-Plate Gauge |
+| 20+ | `◆◇` Diamond Gauge |
+| 30+ | `●○` Orb Gauge |
+| 40+ | `■□` Billboard Gauge |
+
+Recomputed fresh from your current live level on every render, same as the
+rest of Rank — no state file, no hook. Since Rank itself can ease back down
+as your weekly window rolls over, the glyph tier can too; it's not a
+permanent unlock, just what today's level currently earns.
+
+### Quirk Registry: level-up banner
+
+Crossing a multiple-of-10 level (10, 20, 30, ...) upward shows a boxed
+"LEVEL UP!" banner above the normal line, for the one render right after
+it happens:
+
+```
+╔═══════════════════╗
+║  LEVEL UP!  Lv10  ║
+║      ✊ DEKU       ║
+║    Y3 unlocked    ║
+╚═══════════════════╝
+```
+
+Rank has no accumulated state to hook into, but "did I just cross a
+boundary" is inherently a before/after comparison, so this is the one
+Rank-adjacent feature that remembers anything between renders: a small
+`mha-rank-last-level.txt` next to `statusline.ps1`, read and rewritten by
+`statusline.ps1` itself on every render — no `Stop` hook, no lock file.
+Worst case under a race between parallel sessions is one missed or doubled
+banner, which doesn't matter for a purely cosmetic moment.
+
 ## Themes
 
 108 themes — all of Class 1-A, all 20 of Class 1-B, U.A.'s "Big 3", every

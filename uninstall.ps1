@@ -124,4 +124,4 @@ if ($changed) {
 } else {
     Write-Host "Nothing to remove." -ForegroundColor Yellow
 }
-Write-Host "statusline.ps1, agency-sim.ps1, set-theme.ps1, commands\mha-theme.md, commands\patrol.md, and any saved theme/agency state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow
+Write-Host "statusline.ps1, agency-sim.ps1, set-theme.ps1, commands\mha-theme.md, commands\patrol.md, and any saved theme/agency/rank state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow

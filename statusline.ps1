@@ -84,6 +84,33 @@ function Get-RankAbbrev([double]$level) {
     return 'Y1'
 }
 
+# Quirk Registry: boxed "LEVEL UP!" banner shown for one render right after
+# your live level crosses a multiple-of-10 boundary upward. Rank itself
+# accumulates nothing, but "did I just cross a boundary" is inherently a
+# before/after question, so this is the one bonus feature that remembers
+# anything between renders — see the small last-seen-level file read/written
+# further down. Box width adapts to the longest hero name so e.g. "Can't
+# Stop Twinkling" doesn't get clipped.
+function Get-LevelUpBanner([string]$Icon, [string]$HeroName, [int]$Level, [string]$StageAbbrev, [string]$Color, [string]$Reset) {
+    $contentLines = @(
+        "LEVEL UP!  Lv$Level"
+        "$Icon $($HeroName.ToUpper())"
+        "$StageAbbrev unlocked"
+    )
+    $innerWidth = ($contentLines | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
+    $boxWidth = $innerWidth + 4
+    $lines = New-Object System.Collections.Generic.List[string]
+    $lines.Add("$Color╔$('═' * $boxWidth)╗$Reset")
+    foreach ($cl in $contentLines) {
+        $padTotal = $boxWidth - $cl.Length
+        $padLeft = [math]::Floor($padTotal / 2)
+        $padRight = $padTotal - $padLeft
+        $lines.Add("$Color║$Reset" + (' ' * $padLeft) + $cl + (' ' * $padRight) + "$Color║$Reset")
+    }
+    $lines.Add("$Color╚$('═' * $boxWidth)╝$Reset")
+    return $lines
+}
+
 $RESET = Ansi 0
 $BOLD  = Ansi 1
 $DIM   = Ansi256 244   # neutral gray for separators — content carries the theme color, not punctuation
@@ -1150,11 +1177,57 @@ function Get-LevelFromWeekPct($weekPct) {
 # U.A.-to-Hero-Billboard ladder, and a villain was never on it to begin
 # with, so there's no rank of theirs for weekly usage to stand in for.
 $rankPart = $null
+$bannerLines = @()
 if (-not $theme.Villain) {
     $rankInfo = Get-LevelFromWeekPct $week
     $rankLevel = $rankInfo.Level
     $rankAbbrev = Get-RankAbbrev $rankInfo.Continuous
-    $rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel$RESET"
+
+    # Support Course cosmetic unlocks — reskins the progress bar's glyph pair
+    # once your live level crosses a threshold. Purely cosmetic and computed
+    # fresh every render like the rest of Rank: no state, no hook, just
+    # "what does today's live level unlock". Highest unlocked tier wins;
+    # default (▰▱) applies below level 5.
+    $UnlockGlyphs = @(
+        @{ Level = 40; Filled = '■'; Empty = '□' }   # Billboard Gauge
+        @{ Level = 30; Filled = '●'; Empty = '○' }   # Orb Gauge
+        @{ Level = 20; Filled = '◆'; Empty = '◇' }   # Diamond Gauge
+        @{ Level = 15; Filled = '⬢'; Empty = '⬡' }   # Hex-Plate Gauge
+        @{ Level = 10; Filled = '★'; Empty = '☆' }   # Starlight Gauge
+        @{ Level = 5;  Filled = '▮'; Empty = '▯' }   # Twin-Blade Gauge
+    )
+    $barFilledGlyph = '▰'
+    $barEmptyGlyph  = '▱'
+    foreach ($tier in $UnlockGlyphs) {
+        if ($rankLevel -ge $tier.Level) {
+            $barFilledGlyph = $tier.Filled
+            $barEmptyGlyph = $tier.Empty
+            break
+        }
+    }
+    $barSegments = 5
+    $rankFraction = $rankInfo.Continuous - $rankLevel   # progress within the current level, 0-1
+    $rankFilled = [math]::Min($barSegments, [math]::Floor($rankFraction * $barSegments))
+    $rankBar = ($barFilledGlyph * $rankFilled) + ($barEmptyGlyph * ($barSegments - $rankFilled))
+
+    $rankPart = "$C_QUIRK$rankAbbrev · Lv$rankLevel $rankBar$RESET"
+
+    # Quirk Registry level-up banner — fires once, on the render right after
+    # $rankLevel crosses a multiple-of-10 boundary since the last render.
+    # Best-effort: an unreadable/unwritable file just means "no banner this
+    # time", never an error, same promise as the rest of this script.
+    $lastLevelFile = Join-Path $PSScriptRoot 'mha-rank-last-level.txt'
+    try {
+        $lastLevel = $null
+        if (Test-Path $lastLevelFile) {
+            $raw = (Get-Content -Raw $lastLevelFile).Trim()
+            if ($raw -match '^\d+$') { $lastLevel = [int]$raw }
+        }
+        if ($null -ne $lastLevel -and $rankLevel -gt $lastLevel -and [math]::Floor($rankLevel / 10) -gt [math]::Floor($lastLevel / 10)) {
+            $bannerLines = Get-LevelUpBanner -Icon $QUIRK_ICON -HeroName $HERO_NAME -Level $rankLevel -StageAbbrev $rankAbbrev -Color $C_QUIRK -Reset $RESET
+        }
+        Set-Content -Path $lastLevelFile -Value $rankLevel -Encoding utf8 -NoNewline
+    } catch { }
 }
 
 # Cooldown (5h rate limit) — the only remaining optional segment. The 7d
@@ -1186,6 +1259,13 @@ if ($cooldownPart) { $parts.Add($cooldownPart) }
 $parts.Add($mottoPart)
 $line = $parts -join $separator
 
+# Level-up banner (if any) renders on its own lines above the normal status
+# line — see Get-LevelUpBanner and the crossing-detection above.
+$outputLines = New-Object System.Collections.Generic.List[string]
+foreach ($bl in $bannerLines) { $outputLines.Add($bl) }
+$outputLines.Add($line)
+$output = $outputLines -join "`n"
+
 $stdoutWriter = New-Object System.IO.StreamWriter([Console]::OpenStandardOutput(), $utf8NoBom)
-$stdoutWriter.Write($line)
+$stdoutWriter.Write($output)
 $stdoutWriter.Flush()
