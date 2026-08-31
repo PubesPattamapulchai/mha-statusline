@@ -1,1 +1,6 @@
 .serena/
+
+# Runtime state written by statusline.ps1 when run directly from a repo
+# checkout (a normal install writes these to ~/.claude/ instead).
+mha-theme.txt
+mha-rank-last-level.txt
