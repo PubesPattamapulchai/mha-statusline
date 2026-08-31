@@ -461,3 +461,26 @@ tests, no `Edit`/`Write`) — it reviews, it doesn't fix.
 
 or narrow the scope: `/aizawa-review just the auth changes`. See
 `agents/aizawa.md` for the full persona.
+
+## Bonus: Villain Attack notification alerts
+
+`install.ps1` also wires `villain-alert.ps1` into Claude Code's
+`Notification` hook, scoped to just the notification types that mean
+"Claude actually needs you" (a permission prompt, waiting on your input, or
+sitting idle) — not every notification, to avoid alert fatigue. It rings the
+terminal bell and fires a themed OS-level desktop notification (via the
+terminal's OSC 9 sequence — supported by Windows Terminal, iTerm2, ConEmu
+and others; unsupported terminals just no-op):
+
+```
+🚨 VILLAIN SIGHTED — 💥 Dynamight, your call: <the actual prompt>
+```
+
+`Notification` hooks are special: Claude Code ignores their stdout/stderr
+and exit code entirely for this event — a bell/desktop-notification via
+`terminalSequence` in the hook's JSON output is the *only* supported
+user-visible channel, not a design choice made here. Uses whichever theme
+is currently active, same as the statusline.
+
+`uninstall.ps1` removes just this hook entry, same merge-safe way it
+removes the `Stop` hook — other hooks you have configured are untouched.

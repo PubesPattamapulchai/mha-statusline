@@ -72,6 +72,24 @@ if (Test-Path $outputStylePath) {
     $changed = $true
 }
 
+# Same for villain-alert.ps1's Notification hook entry.
+if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Notification') {
+    $villainAlertDest = Join-Path $HOME '.claude\villain-alert.ps1'
+    $villainAlertCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$villainAlertDest`""
+    $kept = @(@($settings.hooks.Notification) | Where-Object {
+        -not (@($_.hooks) | Where-Object { $_.command -eq $villainAlertCommand })
+    })
+    if ($kept.Count -lt @($settings.hooks.Notification).Count) {
+        $settings.hooks.Notification = $kept
+        Write-Host "Removed villain-alert.ps1 from the Notification hook." -ForegroundColor Green
+        $changed = $true
+    }
+}
+
+if ($changed) {
+    $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
+}
+
 # Aizawa-sensei review subagent + /aizawa-review command — another inert
 # opt-in extra (see install.ps1), same pattern as the output style above.
 $agentPath = Join-Path $HOME '.claude\agents\aizawa.md'

@@ -54,6 +54,11 @@ if ($Target -eq 'ClaudeCode') {
     Copy-Item -Path (Join-Path $PSScriptRoot 'commands\aizawa-review.md') -Destination (Join-Path $commandsDir 'aizawa-review.md') -Force
 }
 
+# And villain-alert.ps1, the Notification hook that reskins "Claude needs
+# your attention" notifications as themed alerts.
+$villainAlertDest = Join-Path $claudeDir 'villain-alert.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'villain-alert.ps1') -Destination $villainAlertDest -Force
+
 # Only prompt for a theme on first install — re-running install.ps1 to pick up a
 # script update shouldn't reset a theme you already chose via set-theme.ps1.
 # Shared across targets: the same mha-theme.txt drives both.
@@ -100,6 +105,31 @@ if ($Target -eq 'ClaudeCode') {
     }
     Remove-Item -Path $legacyGainXpDest, $legacyStateFile -Force -ErrorAction SilentlyContinue
 
+    # Wire villain-alert.ps1 into the Notification hook, matched to only the
+    # "Claude actually needs you" notification types -- not every notification,
+    # to avoid alert fatigue. Same merge-safe pattern as the Stop hook above.
+    if ($settings.PSObject.Properties.Name -notcontains 'hooks') {
+        $settings | Add-Member -MemberType NoteProperty -Name 'hooks' -Value ([PSCustomObject]@{})
+    }
+    if ($settings.hooks.PSObject.Properties.Name -notcontains 'Notification') {
+        $settings.hooks | Add-Member -MemberType NoteProperty -Name 'Notification' -Value @()
+    }
+    $villainAlertCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$villainAlertDest`""
+    $villainAlertMatcher = 'permission_prompt|agent_needs_input|idle_prompt'
+    $villainAlreadyWired = $false
+    foreach ($entry in @($settings.hooks.Notification)) {
+        foreach ($h in @($entry.hooks)) {
+            if ($h.command -eq $villainAlertCommand) { $villainAlreadyWired = $true }
+        }
+    }
+    if (-not $villainAlreadyWired) {
+        $notificationEntry = [PSCustomObject]@{
+            matcher = $villainAlertMatcher
+            hooks   = @([PSCustomObject]@{ type = 'command'; command = $villainAlertCommand; timeout = 5 })
+        }
+        $settings.hooks.Notification = @(@($settings.hooks.Notification) + $notificationEntry)
+    }
+
     $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath -Encoding utf8
 
     Write-Host "Installed to $dest" -ForegroundColor Green
@@ -107,6 +137,7 @@ if ($Target -eq 'ClaudeCode') {
     Write-Host "Restart Claude Code (or open a new session) to see the new statusline." -ForegroundColor Yellow
     Write-Host "Optional: try the 'UA Hero Briefing' output style via /config (not enabled by default)." -ForegroundColor Yellow
     Write-Host "Try the strict reviewer: /aizawa-review" -ForegroundColor Yellow
+    Write-Host "Villain alerts wired: a bell + desktop notification fires when Claude needs your input." -ForegroundColor Yellow
 } else {
     # Shell target: hook the PowerShell prompt itself instead of any one
     # tool's config. CurrentUserAllHosts covers powershell.exe, pwsh, and the
