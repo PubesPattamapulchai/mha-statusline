@@ -550,6 +550,80 @@ is currently active, same as the statusline.
 `uninstall.ps1` removes just this hook entry, same merge-safe way it
 removes the `Stop` hook — other hooks you have configured are untouched.
 
+## Bonus: Hermes Auto telemetry forwarding
+
+An optional, **off-by-default** forwarder for a separate, sibling project —
+**Hermes Auto Control Center** (not part of this repo), a local FastAPI
+backend that ingests Claude Code hook telemetry. If you run it locally, this
+relays two of Claude Code's own hook payloads to it, unmodified:
+
+| Hook | Forwarded to |
+|---|---|
+| statusline (inline in `statusline.ps1`) | `POST http://<host>/telemetry/claude/statusline` |
+| `Notification` (`hermes-forward-notification.ps1`) | `POST http://<host>/telemetry/claude/notification` |
+
+Both send the exact JSON Claude Code handed the hook on stdin, unchanged,
+as the request body with `Content-Type: application/json` — no
+transformation, no re-shaping; that's Hermes Auto's job, not this repo's.
+
+**Prerequisite:** Hermes Auto Control Center running locally (its own repo,
+its own setup — this only talks to it over `localhost`).
+
+**Nothing is sent unless you turn it on.** `install.ps1` deploys the
+forwarder scripts and wires the `Notification` hook entry either way (same
+"safe to always drop in" pattern as the other bonuses above), but every
+send is gated behind a config check first, and that config defaults to off:
+
+```json
+// ~/.claude/hermes-forward.json
+{
+  "enabled": false,
+  "url": "http://127.0.0.1:8000"
+}
+```
+
+Flip `enabled` to `true` (and `url` if Hermes Auto isn't on the default
+port) to turn it on — no reinstall needed, just a new Claude Code session,
+same as `mha-theme.txt`. For a one-off override, `$env:MHA_HERMES_ENABLED`
+(`1`/`true`/`0`/`false`) and `$env:MHA_HERMES_URL` take priority over the
+saved file, same precedence `$env:MHA_STATUSLINE_THEME` has.
+
+**Localhost only, hard-enforced:** the configured URL is checked against
+[`Uri.IsLoopback`](https://learn.microsoft.com/dotnet/api/system.uri.isloopback)
+before anything is sent — point it at a non-local host and the forwarder
+just refuses and no-ops (nothing is ever sent to a non-loopback address,
+regardless of what's in the config).
+
+**Never affects Claude Code's own behavior or timing**, by construction:
+
+- The statusline hook only supports one command, and Claude Code reads
+  this script's stdout as the literal statusline text on a tight render
+  loop, so the statusline side never gets a chance to compete for stdout
+  or add latency — `statusline.ps1` hands the raw payload to a fully
+  **detached background process** (`hermes-forward-send.ps1`, started and
+  never waited on) right after reading it, then goes on computing the
+  statusline as normal.
+- The `Notification` side is its own separate hook command (Claude Code
+  supports several per event), registered alongside — never inside —
+  `villain-alert.ps1`'s entry, so it can't interfere with the bell/desktop
+  notification `villain-alert.ps1` fires. It also hands off to the same
+  detached background process rather than blocking on the network call
+  itself.
+- Every network call has a 2-second cap, wrapped in `try`/`catch` that
+  swallows all errors. A failure (Hermes Auto not running, wrong port,
+  timeout) is silently ignored — never thrown, never written to stdout,
+  never changes a hook's exit code.
+
+**No secrets logged by default.** Set `$env:MHA_HERMES_DEBUG=1` for a
+minimal troubleshooting log at `~/.claude/hermes-forward-debug.log` — it
+records only outcomes (`forwarded statusline payload: 812 bytes, status
+200`, `forward failed: <short reason>`), never the payload contents
+themselves (which can carry your prompt text).
+
+`uninstall.ps1` removes just the `hermes-forward-notification.ps1` hook
+entry, same merge-safe way it removes the other hooks above — the scripts
+and `hermes-forward.json` are left on disk.
+
 ## Bonus (experimental): Agency Sim patrol log
 
 A separate `Stop` hook (`agency-sim.ps1`, its own state file, its own

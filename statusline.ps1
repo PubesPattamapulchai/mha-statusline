@@ -29,6 +29,36 @@ if ([Console]::IsInputRedirected) {
     $data = $null
 }
 
+# --- Optional: forward this payload to a local Hermes Auto Control Center
+# instance for telemetry (Phase 3B pre-hardening item #1). Disabled by
+# default -- see README's "Hermes Auto telemetry forwarding" section to opt
+# in. Claude Code only supports one statusline command hook and reads this
+# script's stdout as the literal statusline text on a tight render loop, so
+# this can never compete for stdout or add render latency: it hands the raw
+# stdin payload to hermes-forward-send.ps1 as a FULLY DETACHED background
+# process (started, never waited on) and immediately moves on to computing
+# the statusline itself below. Kicked off this early, right after $raw is
+# captured, so the detach overhead overlaps with the rest of this script's
+# work instead of adding to it. Wrapped in try/catch as a last-resort
+# guard -- a forwarding failure here must never affect the statusline.
+if ($raw) {
+    try {
+        $hermesSender = Join-Path $PSScriptRoot 'hermes-forward-send.ps1'
+        if (Test-Path $hermesSender) {
+            $hermesPayloadFile = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), "mha-hermes-$([guid]::NewGuid().ToString('N')).json")
+            Set-Content -Path $hermesPayloadFile -Value $raw -Encoding utf8 -NoNewline
+
+            $hermesHostExe = (Get-Process -Id $PID).Path
+            $hermesArgs = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $hermesSender, '-Endpoint', 'statusline', '-PayloadFile', $hermesPayloadFile)
+            $hermesStartParams = @{ FilePath = $hermesHostExe; ArgumentList = $hermesArgs }
+            if ([System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT) {
+                $hermesStartParams.WindowStyle = 'Hidden'
+            }
+            Start-Process @hermesStartParams -ErrorAction SilentlyContinue | Out-Null
+        }
+    } catch { }
+}
+
 function Get-Prop {
     param($Object, [string[]]$Path)
     $current = $Object

@@ -59,6 +59,28 @@ if ($Target -eq 'ClaudeCode') {
 $villainAlertDest = Join-Path $claudeDir 'villain-alert.ps1'
 Copy-Item -Path (Join-Path $PSScriptRoot 'villain-alert.ps1') -Destination $villainAlertDest -Force
 
+# And the Hermes Auto telemetry forwarder (Phase 3B pre-hardening item #1):
+# the shared POST core plus its Notification-hook entry point. Always
+# deployed, like villain-alert.ps1/agency-sim.ps1 above -- it's opt-in via
+# hermes-forward.json/env var, so copying it in is a no-op for anyone not
+# running Hermes Auto Control Center locally. statusline.ps1 itself calls
+# hermes-forward-send.ps1 directly for the statusline side (see its own
+# comment near the top), no separate deploy step needed for that half.
+$hermesSendDest = Join-Path $claudeDir 'hermes-forward-send.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'hermes-forward-send.ps1') -Destination $hermesSendDest -Force
+$hermesNotificationDest = Join-Path $claudeDir 'hermes-forward-notification.ps1'
+Copy-Item -Path (Join-Path $PSScriptRoot 'hermes-forward-notification.ps1') -Destination $hermesNotificationDest -Force
+
+# Default config, only if one doesn't already exist -- same "don't clobber a
+# choice already made" rule mha-theme.txt follows on reinstall. Disabled out
+# of the box; flip `enabled` to `true` (and `url` if not on the default
+# port) to turn it on. See README's "Hermes Auto telemetry forwarding".
+$hermesConfigDest = Join-Path $claudeDir 'hermes-forward.json'
+if (-not (Test-Path $hermesConfigDest)) {
+    [PSCustomObject]@{ enabled = $false; url = 'http://127.0.0.1:8000' } |
+        ConvertTo-Json | Set-Content -Path $hermesConfigDest -Encoding utf8
+}
+
 # And agency-sim.ps1 (Phase 1 of the Agency Sim companion feature: logs a
 # patrol/villain/mission event per turn, no narration built on top yet -
 # see docs/PROJECT-IDEAS.md #6) plus the /patrol command that reports it.
@@ -137,6 +159,31 @@ if ($Target -eq 'ClaudeCode') {
         $settings.hooks.Notification = @(@($settings.hooks.Notification) + $notificationEntry)
     }
 
+    # Wire hermes-forward-notification.ps1 as its own, separate Notification
+    # hook entry -- alongside villain-alert.ps1's entry above, never
+    # replacing or editing it. Unlike villain-alert.ps1 (matched to just the
+    # "needs you" notification types, to avoid alert fatigue), this matches
+    # every notification type: it's silent telemetry, not a user-facing
+    # alert, and Hermes Auto's own /telemetry/claude/notification endpoint is
+    # the place to decide what matters, not this script. Opt-in via
+    # hermes-forward.json/$env:MHA_HERMES_ENABLED, so wiring this hook in
+    # unconditionally costs nothing when disabled -- see
+    # hermes-forward-send.ps1's own early "disabled" exit.
+    $hermesNotificationCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$hermesNotificationDest`""
+    $hermesNotificationAlreadyWired = $false
+    foreach ($entry in @($settings.hooks.Notification)) {
+        foreach ($h in @($entry.hooks)) {
+            if ($h.command -eq $hermesNotificationCommand) { $hermesNotificationAlreadyWired = $true }
+        }
+    }
+    if (-not $hermesNotificationAlreadyWired) {
+        $hermesNotificationEntry = [PSCustomObject]@{
+            matcher = '.*'
+            hooks   = @([PSCustomObject]@{ type = 'command'; command = $hermesNotificationCommand; timeout = 5 })
+        }
+        $settings.hooks.Notification = @(@($settings.hooks.Notification) + $hermesNotificationEntry)
+    }
+
     # Wire agency-sim.ps1 as its own separate Stop hook entry (alongside any
     # other Stop hooks already there, not replacing them) - same merge-safe pattern.
     $agencySimCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$agencySimDest`""
@@ -161,6 +208,7 @@ if ($Target -eq 'ClaudeCode') {
     Write-Host "Optional: try the 'UA Hero Briefing' output style via /config (not enabled by default)." -ForegroundColor Yellow
     Write-Host "Try the strict reviewer: /aizawa-review" -ForegroundColor Yellow
     Write-Host "Villain alerts wired: a bell + desktop notification fires when Claude needs your input." -ForegroundColor Yellow
+    Write-Host "Hermes Auto telemetry forwarding: installed but OFF by default -- edit $hermesConfigDest to turn it on (see README)." -ForegroundColor Yellow
 } else {
     # Shell target: hook the PowerShell prompt itself instead of any one
     # tool's config. CurrentUserAllHosts covers powershell.exe, pwsh, and the

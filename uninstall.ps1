@@ -86,6 +86,22 @@ if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PS
     }
 }
 
+# Same for hermes-forward-notification.ps1's own Notification hook entry --
+# the statusline-side forwarding lives inline in statusline.ps1 itself, so
+# there's no separate hook entry for that half to remove here.
+if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Notification') {
+    $hermesNotificationDest = Join-Path $HOME '.claude\hermes-forward-notification.ps1'
+    $hermesNotificationCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File `"$hermesNotificationDest`""
+    $kept = @(@($settings.hooks.Notification) | Where-Object {
+        -not (@($_.hooks) | Where-Object { $_.command -eq $hermesNotificationCommand })
+    })
+    if ($kept.Count -lt @($settings.hooks.Notification).Count) {
+        $settings.hooks.Notification = $kept
+        Write-Host "Removed hermes-forward-notification.ps1 from the Notification hook." -ForegroundColor Green
+        $changed = $true
+    }
+}
+
 # Same for agency-sim.ps1's separate Stop hook entry.
 if ($settings.PSObject.Properties.Name -contains 'hooks' -and $settings.hooks.PSObject.Properties.Name -contains 'Stop') {
     $agencySimDest = Join-Path $HOME '.claude\agency-sim.ps1'
@@ -124,4 +140,4 @@ if ($changed) {
 } else {
     Write-Host "Nothing to remove." -ForegroundColor Yellow
 }
-Write-Host "statusline.ps1, agency-sim.ps1, set-theme.ps1, commands\mha-theme.md, commands\patrol.md, and any saved theme/agency/rank state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow
+Write-Host "statusline.ps1, agency-sim.ps1, set-theme.ps1, hermes-forward-send.ps1, hermes-forward-notification.ps1, hermes-forward.json, commands\mha-theme.md, commands\patrol.md, and any saved theme/agency/rank state are left on disk — delete them manually from $(Join-Path $HOME '.claude') if you want mha-statusline fully gone." -ForegroundColor Yellow
